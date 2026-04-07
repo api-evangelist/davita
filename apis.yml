@@ -1,7 +1,11 @@
 aid: davita
-url: https://raw.githubusercontent.com/api-evangelist/davita/refs/heads/main/apis.yml
+url: 
+  https://raw.githubusercontent.com/api-evangelist/davita/refs/heads/main/apis.yml
 modified: '2026-03-21'
 apis: []
 common:
   - type: Website
     url: https://www.davita.com
+description: >-
+  DaVita delivers dialysis services, kidney health education, and support for people
+  managing chronic kidney disease and end-stage kidney disease.
