@@ -51,6 +51,14 @@ common:
     url: https://www.davita.com/privacy-policy
   - type: Terms of Use
     url: https://www.davita.com/terms-of-use
+  - type: Integrations
+    url: https://davita.com/partners/
+integrations:
+  - name: Hospitals
+  - name: Health Plans
+  - name: Skilled Nursing Facilities
+  - name: Academic Medical Centers
+  - name: GFR Calculator
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
