@@ -53,7 +53,7 @@ common:
     url: https://www.davita.com/physicians
   - type: PrivacyPolicy
     url: https://www.davita.com/privacy-policy
-  - type: Terms of Use
+  - type: TermsOfService
     url: https://www.davita.com/terms-of-use
   - type: Integrations
     url: https://davita.com/partners/
