@@ -29,6 +29,8 @@ position: Consumer
 access: 3rd-Party
 apis: []
 common:
+  - type: DomainSecurity
+    url: security/davita-domain-security.yml
   - type: GitHubOrganization
     url: https://github.com/davita
   - type: LinkedIn
@@ -57,6 +59,8 @@ common:
     url: https://www.davita.com/terms-of-use
   - type: Integrations
     url: https://davita.com/partners/
+  - url: https://newsroom.davita.com/feed/
+    type: Blog
 integrations:
   - name: Hospitals
   - name: Health Plans
