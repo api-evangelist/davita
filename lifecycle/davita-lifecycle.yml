@@ -1,0 +1,49 @@
+generated: '2026-09-05'
+method: probed
+source: >-
+  https://www.davita.com/wp-json/ route index (fetched 2026-09-05), plus probes of candidate status
+  and policy hosts. DaVita publishes no API versioning, deprecation or SLA policy; the absences
+  below were checked, not assumed.
+api: DaVita Web REST API
+versioning:
+  scheme: namespace-in-path
+  current_versions:
+    - davita/v1
+    - wp/v2
+  policy_published: false
+  note: >-
+    The only version signal is the WordPress REST namespace segment. There is no version header, no
+    dated version, and no published policy on when a namespace may change.
+deprecation:
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  note: >-
+    No RFC 8594 Sunset or Deprecation header was returned on any observed response, and no
+    deprecation policy page exists. The route index marks no route as deprecated.
+status_page:
+  published: false
+  probes:
+    - url: https://status.davita.com/
+      status: 0
+      note: Host does not resolve.
+    - url: https://davita.statuspage.io/
+      status: 200
+      note: >-
+        Returns the generic Atlassian Statuspage product marketing page, not a DaVita status page.
+        An unclaimed subdomain, recorded as a miss.
+  note: DaVita operates no public API or service status page.
+sla:
+  published: false
+  note: No availability or latency commitment is published for this surface.
+changelog:
+  published: false
+  note: >-
+    No API changelog exists. Content-level change is observable per record through the wp/v2
+    `modified` / `modified_gmt` fields and the `?modified_after=` query parameter, which is the only
+    change signal an agent can use.
+support:
+  channel: https://davita.com/help-center/
+  note: A patient/consumer help center. There is no developer support channel.

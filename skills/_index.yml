@@ -1,0 +1,36 @@
+generated: '2026-09-05'
+method: generated
+source: openapi/davita-wp-rest.yml (derived from https://www.davita.com/wp-json/)
+note: >-
+  DaVita publishes no agent skills and no AGENTS.md. These three were written by API Evangelist
+  against operationIds verified to exist in the derived OpenAPI, and against responses observed live
+  on 2026-09-05.
+api: DaVita Web REST API
+skills:
+  - name: davita-find-dialysis-center
+    file: davita-find-dialysis-center.md
+    description: Find DaVita dialysis centers and Kidney Smart education classes near a location.
+    operations:
+      - get_davita_v1_find_a_center
+      - get_davita_v1_find_a_class
+  - name: davita-kidney-diet-nutrition
+    file: davita-kidney-diet-nutrition.md
+    description: Look up kidney-relevant nutrients for a food and find kidney-friendly recipes.
+    operations:
+      - get_davita_v1_usda_search
+      - get_davita_v1_usda_food_id
+      - get_wp_v2_dv_recipe
+      - get_wp_v2_dv_recipe_id
+      - get_wp_v2_dv_recipe_diet_tag
+      - get_wp_v2_dv_recipe_category
+  - name: davita-kidney-education-content
+    file: davita-kidney-education-content.md
+    description: Retrieve DaVita's education articles, vocabulary, videos and site-wide search results.
+    operations:
+      - get_wp_v2_search
+      - get_wp_v2_dv_article
+      - get_wp_v2_dv_article_id
+      - get_wp_v2_dv_glossary_term
+      - get_wp_v2_dv_topic
+      - get_wp_v2_dv_video
+      - get_wp_v2_dv_cookbook

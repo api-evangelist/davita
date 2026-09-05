@@ -1,0 +1,83 @@
+generated: '2026-09-05'
+method: probed
+source: >-
+  openapi/davita-wp-rest.yml, live responses from https://www.davita.com/wp-json/, and DaVita's own
+  published Notice of Privacy Practices at https://davita.com/privacy-practices/ (HTTP 200,
+  2026-09-05).
+api: DaVita Web REST API
+conformance:
+  - id: rest
+    conforms: true
+    evidence: >-
+      Resource-collection routing, HTTP verb semantics and JSON representations throughout
+      /wp-json/wp/v2 and /wp-json/davita/v1.
+  - id: hypermedia-links
+    conforms: true
+    evidence: >-
+      Every wp/v2 record carries a _links object (self, collection, about, wp:term, wp:attachment,
+      curies) and collections return an RFC 5988 Link header with rel="next"/"prev". Observed on
+      GET https://www.davita.com/wp-json/wp/v2/dv-recipe?per_page=2
+  - id: pagination
+    conforms: true
+    evidence: >-
+      page/per_page/offset query parameters with X-WP-Total and X-WP-TotalPages response headers,
+      exposed to browsers via Access-Control-Expose-Headers. Observed X-WP-Total 1258 on
+      /wp-json/wp/v2/dv-recipe
+  - id: cors
+    conforms: true
+    evidence: >-
+      Access-Control-Allow-Headers: Authorization, X-WP-Nonce, Content-Disposition, Content-MD5,
+      Content-Type; Access-Control-Expose-Headers: X-WP-Total, X-WP-TotalPages, Link
+  - id: rfc9457
+    conforms: false
+    evidence: >-
+      Errors are the WordPress WP_Error envelope ({code,message,data.status}) served as
+      application/json, not application/problem+json. Observed on
+      GET https://www.davita.com/wp-json/davita/v1/nope (404, rest_no_route).
+  - id: idempotency
+    conforms: false
+    evidence: No Idempotency-Key mechanism declared or observed; the public surface is read-only.
+  - id: oauth2
+    conforms: false
+    evidence: >-
+      /.well-known/oauth-authorization-server returned 404 on every DaVita host. Write routes use
+      WordPress Application Passwords (HTTP basic) and cookie nonces, not OAuth.
+  - id: oidc
+    conforms: false
+    evidence: /.well-known/openid-configuration returned 404 on every DaVita host.
+  - id: fhir
+    conforms: false
+    evidence: >-
+      No FHIR capability statement is served on any public DaVita host. api.davita.com/fhir and
+      api.davita.com/fhir/metadata both returned HTTP 404 with an empty body on 2026-09-05. DaVita
+      is publicly reported to use HL7 FHIR and RESTful APIs internally for clinical data exchange,
+      but exposes no public FHIR endpoint.
+  - id: scim
+    conforms: false
+    evidence: No SCIM schema URN or /scim/v2 surface found.
+  - id: odata
+    conforms: false
+    evidence: No $metadata surface found.
+domain_standards:
+  - id: hipaa-privacy-practices
+    conforms: true
+    kind: regulatory-disclosure
+    evidence: >-
+      https://davita.com/privacy-practices/ (HTTP 200) publishes DaVita's HIPAA Notice of Privacy
+      Practices, naming the Health Insurance Portability and Accountability Act, protected health
+      information, and 42 CFR substance-use-disorder record protections.
+    note: >-
+      This is a regulatory disclosure DaVita is required to publish as a HIPAA covered entity. It is
+      recorded because it is a real, fetched, first-party compliance publication — NOT as evidence
+      that the public REST API carries any health data. It does not: every public route serves
+      marketing, education, recipe and locator content only.
+  - id: hl7-fhir
+    conforms: false
+    kind: domain-standard
+    evidence: >-
+      The kidney-care sector's clinical interchange standard is HL7 FHIR R4. DaVita's public API
+      surface declares no FHIR conformance and serves no CapabilityStatement. Probed
+      https://api.davita.com/fhir/metadata -> 404.
+    note: >-
+      Recorded as an honest negative, not a penalty. Reward-only: an absent domain standard on a
+      content API is the expected result.

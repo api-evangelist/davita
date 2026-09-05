@@ -1,0 +1,150 @@
+generated: '2026-09-05'
+method: derived
+source: >-
+  openapi/davita-wp-rest.yml and live collection probes against https://www.davita.com/wp-json/
+  on 2026-09-05 (record counts read from the X-WP-Total response header).
+api: DaVita Web REST API
+note: >-
+  DaVita's public data model is the WordPress content graph behind davita.com. Relationships are
+  the WordPress post/taxonomy model, discoverable at runtime through the _links object on every
+  record; the counts below are the live X-WP-Total values observed on 2026-09-05.
+id_scheme:
+  type: integer
+  description: WordPress post/term ids. No prefixed or namespaced identifiers.
+entities:
+  - name: dv-recipe
+    label: Kidney-friendly recipe
+    collection: /wp/v2/dv-recipe
+    record_count: 1258
+    description: DaVita's kidney-diet recipe library, the largest single collection on the surface.
+    relationships:
+      - has_many: dv-recipe-category
+        via: wp:term
+      - has_many: dv-recipe-cuisine-tag
+        via: wp:term
+      - has_many: dv-recipe-diet-tag
+        via: wp:term
+      - has_many: dv-recipe-dish-type
+        via: wp:term
+      - has_many: dv-recipe-holiday-tag
+        via: wp:term
+      - has_many: dv-recipe-method-tag
+        via: wp:term
+      - has_one: media
+        via: featured_media
+  - name: dv-article
+    label: Education article
+    collection: /wp/v2/dv-article
+    record_count: 570
+    relationships:
+      - has_many: dv-topic
+        via: wp:term
+      - has_one: media
+        via: featured_media
+  - name: dv-video
+    label: Video
+    collection: /wp/v2/dv-video
+    record_count: 126
+    relationships:
+      - belongs_to: dv-video-playlist
+        via: wp:term
+  - name: dv-video-playlist
+    label: Video playlist
+    collection: /wp/v2/dv-video-playlist
+    record_count: 20
+  - name: dv-person
+    label: Person (clinical leadership, contributors)
+    collection: /wp/v2/dv-person
+    record_count: 53
+  - name: dv-cookbook
+    label: Cookbook
+    collection: /wp/v2/dv-cookbook
+    record_count: 51
+    relationships:
+      - has_many: dv-recipe
+        via: editorial grouping
+  - name: dv-topic
+    label: Education topic taxonomy
+    collection: /wp/v2/dv-topic
+    record_count: 52
+  - name: dv-glossary-term
+    label: Kidney vocabulary term
+    collection: /wp/v2/dv-glossary-term
+    record_count: 33
+  - name: dv-recipe-dish-type
+    collection: /wp/v2/dv-recipe-dish-type
+    record_count: 19
+  - name: dv-recipe-cuisine-tag
+    collection: /wp/v2/dv-recipe-cuisine-tag
+    record_count: 19
+  - name: dv-recipe-category
+    collection: /wp/v2/dv-recipe-category
+    record_count: 14
+  - name: dv-recipe-holiday-tag
+    collection: /wp/v2/dv-recipe-holiday-tag
+    record_count: 10
+  - name: dv-recipe-method-tag
+    collection: /wp/v2/dv-recipe-method-tag
+    record_count: 10
+  - name: dv-recipe-diet-tag
+    collection: /wp/v2/dv-recipe-diet-tag
+    record_count: 9
+  - name: post
+    label: Blog post
+    collection: /wp/v2/posts
+    record_count: 665
+  - name: page
+    collection: /wp/v2/pages
+    record_count: 165
+  - name: media
+    collection: /wp/v2/media
+    record_count: 4080
+  - name: dv-dialysis-center
+    label: Dialysis center (custom post type)
+    collection: /wp/v2/dv-dialysis-center
+    record_count: 0
+    note: >-
+      The post type is registered and answers 200, but is empty. Center data is served instead by
+      the davita/v1 locator endpoint below, which is not a WordPress collection.
+  - name: dv-food-analyzer
+    collection: /wp/v2/dv-food-analyzer
+    record_count: 0
+    note: Registered but empty; the live food data comes from the davita/v1 USDA proxy.
+  - name: dv-image-category
+    collection: /wp/v2/dv-image-category
+    record_count: 0
+service_endpoints:
+  - name: find-a-center
+    path: /davita/v1/find-a-center
+    parameters: [location, lat, lng, modalities]
+    description: >-
+      Dialysis center locator. Returns {"success":true,"data":{"locations":...}}. `location` is
+      required — supplying only lat/lng returns rest_missing_callback_param.
+    shape: envelope
+  - name: find-a-class
+    path: /davita/v1/find-a-class
+    parameters: [location, language, sort, classes, days, time]
+    description: >-
+      Kidney Smart class finder. Returns a filters[] block (language, sort, class location, days,
+      time) with live counts alongside the result set.
+    shape: envelope
+  - name: usda-search
+    path: /davita/v1/usda/search
+    parameters: [food, page]
+    description: >-
+      Food search proxied to USDA FoodData Central, re-shaped for kidney diet: each hit carries
+      calories, protein, sodium, potassium and phosphorus.
+    upstream: USDA FoodData Central
+    shape: envelope
+  - name: usda-food
+    path: /davita/v1/usda/food/{id}
+    parameters: [id]
+    description: Single food record by USDA fdcId.
+    upstream: USDA FoodData Central
+    shape: envelope
+envelope:
+  description: >-
+    davita/v1 routes wrap their payload as {"success": <bool>, "data": <object>}, which is a
+    different shape from the wp/v2 collections (bare arrays/objects with _links). An agent must
+    handle both.
+render: null

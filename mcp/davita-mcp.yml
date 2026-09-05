@@ -1,0 +1,80 @@
+generated: '2026-09-05'
+method: derived
+source: openapi/davita-wp-rest.yml
+status: candidate
+api: DaVita Web REST API
+note: >-
+  DaVita ships no MCP server. Probes on 2026-09-05 returned: https://mcp.davita.com/mcp — host does
+  not resolve; https://www.davita.com/mcp — 404; https://api.davita.com/mcp — 404. No npm or PyPI
+  package under a DaVita name exists. The tools below are a CANDIDATE set derived from the public
+  read operations in the OpenAPI this pipeline built from DaVita's own route index. Nobody serves
+  them today.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: none
+  verified: probed
+probes:
+  - url: https://mcp.davita.com/mcp
+    method: POST tools/list
+    status: 0
+    note: DNS does not resolve.
+  - url: https://www.davita.com/mcp
+    method: POST tools/list
+    status: 404
+  - url: https://api.davita.com/mcp
+    method: POST tools/list
+    status: 404
+transport: null
+tools:
+  - name: find_dialysis_center
+    description: >-
+      Find DaVita dialysis centers near a location, optionally filtered by treatment modality.
+      `location` is required; lat/lng alone returns a 400.
+    rest: get_davita_v1_find_a_center
+    path: GET /davita/v1/find-a-center
+    inputs: [location, lat, lng, modalities]
+  - name: find_kidney_smart_class
+    description: Find DaVita Kidney Smart education classes by location, language, day and time, in person or online.
+    rest: get_davita_v1_find_a_class
+    path: GET /davita/v1/find-a-class
+    inputs: [location, language, sort, classes, days, time]
+  - name: search_foods
+    description: >-
+      Search foods and return kidney-relevant nutrients — calories, protein, sodium, potassium and
+      phosphorus — sourced from USDA FoodData Central and re-shaped by DaVita.
+    rest: get_davita_v1_usda_search
+    path: GET /davita/v1/usda/search
+    inputs: [food, page]
+  - name: get_food
+    description: Retrieve one food record by USDA fdcId with its kidney-relevant nutrient panel.
+    rest: get_davita_v1_usda_food_id
+    path: GET /davita/v1/usda/food/{id}
+    inputs: [id]
+  - name: search_recipes
+    description: Search DaVita's kidney-friendly recipe library (1,258 recipes as of 2026-09-05).
+    rest: get_wp_v2_dv_recipe
+    path: GET /wp/v2/dv-recipe
+    inputs: [search, page, per_page, orderby, order, _fields]
+  - name: get_recipe
+    description: Retrieve one kidney-friendly recipe by id.
+    rest: get_wp_v2_dv_recipe_id
+    path: GET /wp/v2/dv-recipe/{id}
+    inputs: [id, context, _fields]
+  - name: search_education_articles
+    description: Search DaVita's kidney education article library (570 articles as of 2026-09-05).
+    rest: get_wp_v2_dv_article
+    path: GET /wp/v2/dv-article
+    inputs: [search, page, per_page, orderby, order, _fields]
+  - name: lookup_kidney_term
+    description: Look up a term in DaVita's kidney care vocabulary (33 terms as of 2026-09-05).
+    rest: get_wp_v2_dv_glossary_term
+    path: GET /wp/v2/dv-glossary-term
+    inputs: [search, page, per_page, _fields]
+  - name: search_site
+    description: Search everything published on davita.com and return titles with canonical URLs.
+    rest: get_wp_v2_search
+    path: GET /wp/v2/search
+    inputs: [search, page, per_page, type, subtype]

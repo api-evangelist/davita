@@ -1,0 +1,14 @@
+generated: '2026-09-05'
+method: searched
+source: https://davita.com/ (site-wide search via the provider's own /wp-json/wp/v2/search endpoint, 2026-09-05)
+api: DaVita Web REST API
+plan_count: 0
+plans: []
+note: >-
+  DaVita publishes no API pricing, no plans, no developer sign-up and no commercial terms for the
+  REST surface at https://www.davita.com/wp-json/. The API is not a product: it is the CMS backing
+  davita.com, reachable by the public because WordPress serves its route index and read collections
+  anonymously by default. There is no free tier to enrol in and no paid tier to buy, so this is
+  plan_count 0 by absence of a programme, not by an enterprise "contact us" gate. DaVita's commercial
+  relationships (hospital, physician and health-plan partnerships) are sales-led and unpriced in
+  public.

@@ -1,0 +1,26 @@
+generated: '2026-09-05'
+method: derived
+source: openapi/davita-wp-rest.yml
+summary:
+  types:
+  - apiKey
+  - http
+  api_key_in:
+  - header
+schemes:
+- name: applicationPassword
+  type: http
+  scheme: basic
+  description: 'WordPress Application Passwords. Authorization endpoint declared by the index:
+    https://davita.com/wp-admin/authorize-application.php. Not offered to the public; write
+    routes are staff-only.'
+  sources:
+  - openapi/davita-wp-rest.yml
+- name: cookieNonce
+  type: apiKey
+  in: header
+  parameter: X-WP-Nonce
+  description: WordPress cookie authentication nonce, accepted per the Access-Control-Allow-Headers
+    response header. Browser/session only.
+  sources:
+  - openapi/davita-wp-rest.yml

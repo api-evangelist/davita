@@ -1,0 +1,137 @@
+generated: '2026-09-05'
+method: derived
+source: >-
+  openapi/davita-wp-rest.yml (itself derived from https://www.davita.com/wp-json/), plus live
+  unauthenticated request/response observation against https://www.davita.com/wp-json/ on 2026-09-05
+note: >-
+  DaVita publishes no API documentation, so every convention below is read from the machine-readable
+  WordPress REST route index the company's own host serves, or observed directly on live responses.
+  Nothing here is taken from prose.
+api: DaVita Web REST API
+base_url: https://www.davita.com/wp-json
+media_type: application/json; charset=UTF-8
+auth_style:
+  public_read: none
+  description: >-
+    All GET routes in the davita/v1 namespace and the dv-* content collections answer
+    unauthenticated with HTTP 200. Write routes require WordPress Application Passwords (HTTP basic)
+    or a cookie session nonce (X-WP-Nonce); neither is offered to the public, so the practical
+    surface is read-only.
+  observed:
+    - request: GET /wp/v2/settings
+      status: 401
+      body: '{"code":"rest_forbidden","message":"Sorry, you are not allowed to do that.","data":{"status":401}}'
+  see_also: authentication/davita-authentication.yml
+pagination:
+  style: page-number
+  params:
+    - name: page
+      default: 1
+      description: 1-based page index.
+    - name: per_page
+      default: 10
+      minimum: 1
+      maximum: 100
+      description: Page size. Values outside 1-100 return rest_invalid_param with HTTP 400.
+    - name: offset
+      description: Offset the result set by a specific number of items.
+    - name: search
+      description: Full-text search across the collection.
+    - name: order
+      enum: [asc, desc]
+    - name: orderby
+      description: Sort field; varies per collection (date, id, title, slug, relevance, ...).
+  response_headers:
+    - name: X-WP-Total
+      description: Total number of records in the collection matching the query.
+    - name: X-WP-TotalPages
+      description: Total number of pages at the requested per_page.
+    - name: Link
+      description: RFC 5988 rel="next" / rel="prev" pagination links.
+  cors_exposed: 'Access-Control-Expose-Headers: X-WP-Total, X-WP-TotalPages, Link'
+  observed:
+    - request: GET /wp/v2/dv-recipe?per_page=2
+      status: 200
+      x_wp_total: 1258
+      x_wp_totalpages: 629
+field_selection:
+  supported: true
+  params:
+    - name: _fields
+      description: Comma-separated allow-list limiting the properties returned per record.
+    - name: _embed
+      description: Inline embedded resources (author, featured media, terms) via the _links graph.
+    - name: context
+      enum: [view, embed, edit]
+      description: Response shape. edit requires authentication.
+  hypermedia: >-
+    Every record carries a _links object (self, collection, about, wp:attachment, wp:term, curies),
+    so the collection graph is walkable without out-of-band documentation.
+metadata:
+  supported: true
+  description: WordPress meta fields are exposed on write bodies as a meta object; read exposure varies per post type.
+request_id_tracing:
+  supported: false
+  note: >-
+    No request-id or correlation header is returned. Responses carry x-rq (edge routing token) and
+    x-cache (HIT/MISS) from the WordPress VIP edge, which are cache diagnostics, not trace ids.
+versioning:
+  scheme: namespace-in-path
+  current: davita/v1, wp/v2
+  description: >-
+    Versioning is the WordPress REST namespace segment. DaVita's own namespace is davita/v1; core
+    content rides wp/v2. No version header, no dated version, no published deprecation policy.
+  see_also: lifecycle/davita-lifecycle.yml
+error_envelope:
+  format: wordpress-rest
+  rfc9457: false
+  content_type: application/json
+  shape:
+    code: machine-readable string, e.g. rest_no_route
+    message: human-readable sentence
+    data:
+      status: HTTP status repeated in the body
+      params: per-parameter validation messages (rest_invalid_param only)
+      details: per-parameter nested error objects (rest_invalid_param only)
+  see_also: errors/davita-problem-types.yml
+rate_limit_signaling:
+  headers_returned: []
+  note: >-
+    No X-RateLimit-*, RateLimit-* or Retry-After header was returned on any observed response, and
+    no limit is documented. Responses carry cache-control max-age=60 from the WordPress VIP edge,
+    which is a caching directive and not a rate-limit signal.
+  see_also: rate-limits/davita-rate-limits.yml
+idempotency:
+  coverage: none
+  mechanism: null
+  header: null
+  scope: []
+  note: >-
+    No Idempotency-Key header, no request-id de-duplication and no replay window is declared in the
+    route index or observed on live responses. The public surface is read-only (GET), so an agent
+    cannot double-fire a state change through it; the authenticated write routes inherit WordPress
+    core semantics, which carry no idempotency mechanism.
+reversibility:
+  grade: na
+  rationale: >-
+    Every route reachable without credentials is a GET. The public API has no write surface, so
+    there is nothing to reverse. The authenticated WordPress write routes (POST/PUT/PATCH/DELETE on
+    wp/v2 collections) are staff-only and not offered to the public; DELETE on posts supports the
+    WordPress trash/force distinction (force=false moves to trash and is restorable, force=true is
+    permanent), but DaVita publishes no policy or window for it, so no window is asserted here.
+  write_surfaces:
+    - surface: public (unauthenticated)
+      operations: none
+      reversal: na
+    - surface: authenticated wp/v2 collections
+      operations: POST/PUT/PATCH/DELETE
+      reversal: >-
+        DELETE with force=false moves the record to the WordPress trash and is restorable by an
+        authenticated editor; force=true is permanent and irreversible.
+      window: null
+      window_source: null
+      note: Not publicly accessible; no DaVita-published policy states a retention window.
+  dry_run_mode: na
+dry_run:
+  supported: false
+  note: No preview, simulate or dry-run parameter is declared on any route.

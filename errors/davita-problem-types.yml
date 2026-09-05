@@ -1,0 +1,85 @@
+generated: '2026-09-05'
+method: probed
+source: >-
+  Live unauthenticated requests against https://www.davita.com/wp-json/ on 2026-09-05, cross-checked
+  against openapi/davita-wp-rest.yml. DaVita publishes no error reference, so every entry below was
+  observed on a real response.
+api: DaVita Web REST API
+format: wordpress-rest
+rfc9457: false
+envelope:
+  content_type: application/json; charset=UTF-8
+  fields:
+    code: machine-readable error identifier
+    message: human-readable sentence
+    data.status: HTTP status repeated in the body
+    data.params: per-parameter validation messages (validation errors only)
+    data.details: nested per-parameter error objects (validation errors only)
+  note: >-
+    The envelope is WordPress core's WP_Error serialization, not application/problem+json. There is
+    no type URI, no instance, and no title/detail split, so an agent must key on `code`.
+problem_types:
+  - code: rest_no_route
+    status: 404
+    title: No route was found matching the URL and request method.
+    cause: The path or method is not registered in this namespace.
+    remediation: Re-read the route index at https://www.davita.com/wp-json/ and check the method is in the route's `methods` list.
+    observed_at: GET /wp-json/davita/v1/nope
+  - code: rest_post_invalid_id
+    status: 404
+    title: Invalid post ID.
+    cause: The requested record id does not exist in this collection.
+    remediation: List the collection first and use an id from the response.
+    observed_at: GET /wp-json/wp/v2/dv-recipe/99999999
+  - code: rest_invalid_param
+    status: 400
+    title: 'Invalid parameter(s): <name>'
+    cause: A query parameter failed schema validation (out of range, or not in the declared enum).
+    remediation: >-
+      Read data.details.<param>.message — it names the exact constraint, e.g. "per_page must be
+      between 1 (inclusive) and 100 (inclusive)" or the full allowed enum for orderby.
+    sub_codes:
+      - rest_out_of_bounds
+      - rest_not_in_enum
+    observed_at: GET /wp-json/wp/v2/dv-recipe?per_page=999
+  - code: rest_missing_callback_param
+    status: 400
+    title: 'Missing parameter(s): <name>'
+    cause: A parameter the route declares as required was not supplied.
+    remediation: data.params is an array of the missing names. Supply them and retry.
+    observed_at: GET /wp-json/davita/v1/usda/search
+  - code: rest_forbidden
+    status: 401
+    title: Sorry, you are not allowed to do that.
+    cause: The route requires an authenticated WordPress capability.
+    remediation: Not resolvable by a public client. These routes are staff-only.
+    observed_at: GET /wp-json/wp/v2/settings
+  - code: rest_cannot_create
+    status: 401
+    title: Sorry, you are not allowed to create posts as this user.
+    cause: An unauthenticated POST to a content collection.
+    remediation: Not resolvable by a public client. The public surface is read-only.
+    observed_at: POST /wp-json/wp/v2/dv-recipe
+  - code: dv_token_invalid
+    status: 400
+    title: Token is required.
+    cause: A davita/v1 route that verifies a site-issued token was called without one.
+    remediation: >-
+      The token is issued to the DaVita web front end, not to third-party clients. This route is not
+      part of the public read surface.
+    observed_at: POST /wp-json/davita/v1/verify-token
+    namespace: davita/v1
+  - code: dv_usda_api_fail_error
+    status: 404
+    title: Something went wrong while getting data from the USDA API.
+    cause: >-
+      The davita/v1 food endpoints proxy the USDA FoodData Central API; this is returned when the
+      upstream lookup fails or the fdcId is unknown.
+    remediation: Use an fdcId returned by /wp-json/davita/v1/usda/search rather than an arbitrary integer.
+    observed_at: GET /wp-json/davita/v1/usda/food/1
+    namespace: davita/v1
+    upstream: USDA FoodData Central
+gaps:
+  - No RFC 9457 problem+json representation.
+  - No error reference page is published; this catalog is the only enumeration that exists.
+  - 401 is returned where 403 would be correct for an authenticated-but-unauthorized caller (WordPress core behaviour).

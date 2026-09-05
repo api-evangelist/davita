@@ -1,0 +1,96 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the DaVita Web REST API
+  version: 1.0.0
+extends: ../openapi/davita-wp-rest.yml
+x-generated: '2026-09-05'
+x-method: generated
+x-source: >-
+  API Evangelist enrichment pipeline. Captures the runtime facts observed against
+  https://www.davita.com/wp-json/ on 2026-09-05 that the WordPress route index does not itself
+  declare. The underlying OpenAPI is never mutated.
+actions:
+  - target: $.info
+    update:
+      x-provider: DaVita Inc.
+      x-documentation-published: false
+      x-contract-published-by-provider: false
+      x-contract-source: https://www.davita.com/wp-json/
+      x-agent-readiness-note: >-
+        Undocumented but callable. Reads are anonymous, the route index is self-describing, and the
+        _links graph makes the collection walkable at runtime. There is no rate-limit signal, no
+        status page, no deprecation policy and no support channel for developers.
+  - target: $.info
+    update:
+      x-observed: '2026-09-05'
+      x-error-catalog: ../errors/davita-problem-types.yml
+      x-conventions: ../conventions/davita-conventions.yml
+      x-data-model: ../data-model/davita-data-model.yml
+      x-lifecycle: ../lifecycle/davita-lifecycle.yml
+  - target: $.paths['/davita/v1/find-a-center'].get
+    update:
+      summary: Find DaVita dialysis centers near a location
+      description: >-
+        Dialysis center locator behind https://davita.com/tools/find-a-dialysis-center/. `location`
+        is required — supplying only lat/lng returns HTTP 400 rest_missing_callback_param. Responds
+        with the davita/v1 envelope {"success": true, "data": {"locations": ...}}.
+      x-observed-status: 200
+      x-response-envelope: davita-v1
+  - target: $.paths['/davita/v1/find-a-class'].get
+    update:
+      summary: Find DaVita Kidney Smart education classes
+      description: >-
+        Class finder behind https://davita.com/kidneysmart/. Returns a filters[] block carrying live
+        option counts (language, sort, in-person vs online, days, time) alongside the results.
+      x-observed-status: 200
+      x-response-envelope: davita-v1
+  - target: $.paths['/davita/v1/usda/search'].get
+    update:
+      summary: Search foods for kidney-relevant nutrients
+      description: >-
+        Food search behind https://davita.com/tools/food-analyzer/. Proxies USDA FoodData Central and
+        reshapes each hit to the nutrients that matter on a kidney diet — calories, protein, sodium,
+        potassium and phosphorus. Paginated via `page` against totalHits/totalPages in the envelope.
+      x-observed-status: 200
+      x-upstream: USDA FoodData Central
+      x-response-envelope: davita-v1
+  - target: $.paths['/davita/v1/usda/food/{id}'].get
+    update:
+      summary: Get one USDA food record with a kidney-diet nutrient panel
+      description: >-
+        `id` is a USDA fdcId returned by /davita/v1/usda/search. An unknown id returns HTTP 404 with
+        code dv_usda_api_fail_error, not rest_post_invalid_id.
+      x-upstream: USDA FoodData Central
+      x-response-envelope: davita-v1
+  - target: $.paths['/wp/v2/dv-recipe'].get
+    update:
+      summary: List DaVita kidney-friendly recipes
+      description: >-
+        1,258 records observed 2026-09-05 (X-WP-Total). Filter through the six recipe taxonomies —
+        category, cuisine tag, diet tag, dish type, holiday tag, method tag.
+      x-record-count: 1258
+      x-record-count-observed: '2026-09-05'
+  - target: $.paths['/wp/v2/dv-article'].get
+    update:
+      summary: List DaVita kidney education articles
+      x-record-count: 570
+      x-record-count-observed: '2026-09-05'
+  - target: $.paths['/wp/v2/dv-glossary-term'].get
+    update:
+      summary: List DaVita kidney vocabulary terms
+      x-record-count: 33
+      x-record-count-observed: '2026-09-05'
+  - target: $.paths['/wp/v2/dv-video'].get
+    update:
+      summary: List DaVita videos
+      x-record-count: 126
+      x-record-count-observed: '2026-09-05'
+  - target: $.paths['/wp/v2/dv-dialysis-center'].get
+    update:
+      description: >-
+        Registered custom post type that answers HTTP 200 with an empty array (X-WP-Total 0 observed
+        2026-09-05). Center data is served by /davita/v1/find-a-center instead. Do not build against
+        this collection.
+      x-record-count: 0
+      x-record-count-observed: '2026-09-05'
+      deprecated: false

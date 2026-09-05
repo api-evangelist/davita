@@ -4,33 +4,49 @@ description: >-
   DaVita Inc. is a Fortune 500 kidney care company operating in-center
   hemodialysis, home hemodialysis, and peritoneal dialysis programs in the
   United States and abroad, alongside transplant support, integrated kidney
-  care, hospital partnerships, and clinical research. DaVita does not
-  publish a public developer API; integration with the company is handled
-  through patient-facing portals, payer and provider partnerships, and
-  electronic health record data exchange standards.
+  care, hospital partnerships, and clinical research. DaVita runs no developer
+  program and publishes no API documentation, but its own web platform serves a
+  live, public, unauthenticated REST API at https://www.davita.com/wp-json/ with
+  a first-party davita/v1 namespace: a dialysis center locator, a Kidney Smart
+  class finder, a USDA-sourced food and nutrient lookup shaped for the kidney
+  diet, and 1,258 kidney-friendly recipes, 570 education articles and a kidney
+  vocabulary alongside them. Clinical integration remains sales-led through
+  payer, hospital and physician partnerships and EHR data exchange; there is no
+  public FHIR endpoint.
 type: Index
 deliveryModel:
   model: saas
   open_source: false
   commercial: true
-  callable_host: false
+  callable_host: true
   label: Hosted service · you call their endpoint
-  confidence: medium
+  confidence: high
   source:
-  - pricing
-  generated: '2026-08-28'
-  method: derived
+  - probe
+  note: >-
+    Corrected 2026-09-05 from callable_host false. https://www.davita.com/wp-json/ answers HTTP 200
+    anonymously with a WordPress REST route index, and its read collections and the davita/v1
+    endpoints were called live without credentials.
+  generated: '2026-09-05'
+  method: probed
 accessModel:
-  pricing: unknown
-  onboarding: unknown
+  pricing: free
+  onboarding: none
   trial: false
-  try_now: false
-  public: false
-  label: Unknown
-  confidence: low
-  source: []
-  generated: '2026-07-22'
-  method: derived
+  try_now: true
+  public: true
+  label: Public · no key, no account, no published plan
+  confidence: high
+  source:
+  - probe
+  note: >-
+    Corrected 2026-09-05. The REST surface at https://www.davita.com/wp-json/ requires no key and no
+    account: GET /davita/v1/usda/search?food=apple and GET /wp/v2/dv-recipe both returned HTTP 200
+    unauthenticated. `pricing: free` records the absence of any charge or plan, not a free tier —
+    DaVita publishes no plans at all (see plans/davita-plans-pricing.yml, plan_count 0). There is no
+    developer sign-up because there is no developer program.
+  generated: '2026-09-05'
+  method: probed
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/davita.png
 tags:
   - Chronic Kidney Disease
@@ -41,16 +57,69 @@ tags:
   - Hospital Partnerships
   - Integrated Kidney Care
   - Kidney Care
+  - Nutrition
+  - Patient Education
+  - Recipes
 url: >-
   https://raw.githubusercontent.com/api-evangelist/davita/refs/heads/main/apis.yml
 created: '2026-03-21'
-modified: '2026-04-28'
+modified: '2026-09-05'
 specificationVersion: '0.23'
 kind: company
-position: Consuming
+position: Producing
 access: 3rd-Party
-apis: []
+apis:
+  - aid: davita-web-rest-api
+    name: DaVita Web REST API
+    description: >-
+      The public, unauthenticated REST API that DaVita's own web platform serves at
+      https://www.davita.com/wp-json/. It carries a first-party davita/v1 namespace — a dialysis
+      center locator, a Kidney Smart class finder, and a USDA FoodData Central proxy that reshapes
+      each food to the nutrients that matter on a kidney diet (sodium, potassium, phosphorus,
+      protein, calories) — alongside dv-* content collections holding 1,258 kidney-friendly recipes,
+      570 education articles, 126 videos, 51 cookbooks and 33 kidney vocabulary terms. DaVita
+      publishes no documentation, no OpenAPI, no SDKs and no developer program for it; the only
+      machine-readable definition the company serves is the WordPress REST route discovery index at
+      the base URL, from which the OpenAPI in this repository was mechanically derived.
+    humanURL: https://davita.com/tools/
+    baseURL: https://www.davita.com/wp-json
+    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/davita.png
+    tags:
+      - Content
+      - Dialysis
+      - Kidney Care
+      - Nutrition
+      - Patient Education
+      - Recipes
+      - WordPress
+    properties:
+      - type: OpenAPI
+        url: openapi/davita-wp-rest.yml
+      - type: Overlay
+        url: overlays/davita-wp-rest-overlay.yaml
+      - type: Conventions
+        url: conventions/davita-conventions.yml
+      - type: ErrorCatalog
+        url: errors/davita-problem-types.yml
+      - type: DataModel
+        url: data-model/davita-data-model.yml
+      - type: Lifecycle
+        url: lifecycle/davita-lifecycle.yml
+      - type: RateLimits
+        url: rate-limits/davita-rate-limits.yml
+      - type: Plans
+        url: plans/davita-plans-pricing.yml
+      - type: Conformance
+        url: conformance/davita-conformance.yml
+      - type: X-MCPServerCandidate
+        url: mcp/davita-mcp.yml
+      - type: AgentSkill
+        url: skills/_index.yml
+      - type: Packages
+        url: packages/davita-packages.yml
 common:
+  - type: Authentication
+    url: authentication/davita-authentication.yml
   - type: DomainSecurity
     url: security/davita-domain-security.yml
   - type: GitHubOrganization
@@ -60,11 +129,11 @@ common:
   - type: Website
     url: https://www.davita.com
   - type: Patient Portal
-    url: https://www.mydavita.com
+    url: https://www.davita.com/mydavita/
   - type: Education
     url: https://www.davita.com/education
   - type: Find a Center
-    url: https://www.davita.com/locations
+    url: https://davita.com/tools/find-a-dialysis-center/
   - type: Investor Relations
     url: https://investors.davita.com/
   - type: Newsroom
@@ -72,7 +141,7 @@ common:
   - type: Careers
     url: https://careers.davita.com/
   - type: Hospital Partnerships
-    url: https://www.davita.com/services/hospital-services
+    url: https://davita.com/partners/hospitals/
   - type: Physician Partnerships
     url: https://www.davita.com/physicians
   - type: PrivacyPolicy
@@ -83,6 +152,12 @@ common:
     url: https://davita.com/partners/
   - url: https://newsroom.davita.com/feed/
     type: Blog
+  - type: LLMsTxt
+    url: llms/davita-llms.txt
+  - type: Support
+    url: https://davita.com/help-center/
+  - type: Compliance
+    url: https://davita.com/privacy-practices/
 integrations:
   - name: Hospitals
   - name: Health Plans
@@ -92,3 +167,8 @@ integrations:
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
+x-enrichment:
+  date: '2026-09-05'
+  status: enriched
+  artifacts_added: 19
+  pass: local-v3

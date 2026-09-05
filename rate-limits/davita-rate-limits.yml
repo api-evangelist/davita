@@ -1,0 +1,27 @@
+generated: '2026-09-05'
+method: probed
+source: >-
+  Live unauthenticated responses from https://www.davita.com/wp-json/ observed 2026-09-05. DaVita
+  publishes no rate-limit documentation for this surface.
+api: DaVita Web REST API
+limit_count: 0
+rate_limits: []
+response_headers: []
+exhaustion_status: null
+note: >-
+  No published limits and no runtime signal. Every observed response — davita/v1 and wp/v2 alike —
+  returned no X-RateLimit-*, no RateLimit-*, and no Retry-After header. The only throughput-shaping
+  header is `cache-control: max-age=60` from the WordPress VIP edge (with `x-cache: HIT|MISS`),
+  which is a caching directive, not a rate limit. An agent calling this API cannot tell how much
+  budget it has left, and cannot distinguish throttling from an outage. Per-page volume is capped
+  structurally instead: `per_page` is bounded to 100 and values outside 1-100 return
+  rest_invalid_param with HTTP 400.
+observed:
+  - request: GET https://www.davita.com/wp-json/wp/v2/dv-recipe?per_page=2
+    status: 200
+    rate_limit_headers: none
+    cache_control: max-age=60
+  - request: GET https://www.davita.com/wp-json/davita/v1/usda/search?food=apple
+    status: 200
+    rate_limit_headers: none
+    cache_control: max-age=60

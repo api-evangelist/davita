@@ -1,0 +1,23 @@
+generated: '2026-09-05'
+method: searched
+source: >-
+  npm registry search (registry.npmjs.org), PyPI (pypi.org/pypi/davita/json), plus davita.com site
+  search and the github.com/davita organization API — all probed 2026-09-05.
+package_count: 0
+packages: []
+note: >-
+  DaVita publishes no client libraries in any package registry. npm search for "davita" returns no
+  DaVita-authored package; https://pypi.org/pypi/davita/json returns 404; the github.com/davita
+  organization exists (created 2015-02-26) and returns HTTP 200 but holds 0 public repositories, so
+  there is no first-party source to package. No SDKs pointer is emitted: an SDK count of zero is the
+  honest reading. Consumers of the REST surface at https://www.davita.com/wp-json/ can use any
+  generic WordPress REST client, but none of those are DaVita's.
+probes:
+  - url: https://registry.npmjs.org/-/v1/search?text=davita
+    status: 200
+    result: no DaVita-authored package
+  - url: https://pypi.org/pypi/davita/json
+    status: 404
+  - url: https://api.github.com/orgs/davita/repos
+    status: 200
+    result: empty array (public_repos 0)
