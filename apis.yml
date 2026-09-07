@@ -118,6 +118,8 @@ apis:
       - type: Packages
         url: packages/davita-packages.yml
 common:
+  - type: Press Release Archive
+    url: https://newsroom.davita.com/
   - type: Authentication
     url: authentication/davita-authentication.yml
   - type: DomainSecurity
