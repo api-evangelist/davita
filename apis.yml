@@ -62,32 +62,16 @@ kind: company
 position: Producing
 access: 3rd-Party
 apis:
-- aid: davita:davita-web-rest-api
-  name: DaVita Web REST API
-  description: The public, unauthenticated REST API that DaVita's own web platform serves at https://www.davita.com/wp-json/.
-    It carries a first-party davita/v1 namespace — a dialysis center locator, a Kidney Smart class finder,
-    and a USDA FoodData Central proxy that reshapes each food to the nutrients that matter on a kidney
-    diet (sodium, potassium, phosphorus, protein, calories) — alongside dv-* content collections holding
-    1,258 kidney-friendly recipes, 570 education articles, 126 videos, 51 cookbooks and 33 kidney vocabulary
-    terms. DaVita publishes no documentation, no OpenAPI, no SDKs and no developer program for it; the
-    only machine-readable definition the company serves is the WordPress REST route discovery index at
-    the base URL, from which the OpenAPI in this repository was mechanically derived.
+- aid: davita:davita-davita-v1-api
+  name: DaVita Davita V1 API
+  description: DaVita first-party REST namespace (davita/v1)
   humanURL: https://davita.com/tools/
   baseURL: https://www.davita.com/wp-json
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/davita.png
   tags:
-  - Content
-  - Dialysis
-  - Kidney Care
-  - Nutrition
-  - Patient Education
-  - Recipes
-  - WordPress
+  - davita-v1
   properties:
   - type: OpenAPI
-    url: openapi/davita-wp-rest.yml
-  - type: Overlay
-    url: overlays/davita-wp-rest-overlay.yaml
+    url: openapi/davita-davita-v1-api-openapi.yml
   - type: Conventions
     url: conventions/davita-conventions.yml
   - type: ErrorCatalog
@@ -104,11 +88,41 @@ apis:
     url: conformance/davita-conformance.yml
   - type: X-MCPServerCandidate
     url: mcp/davita-mcp.yml
-  - type: AgentSkill
-    url: skills/_index.yml
+  - type: Packages
+    url: packages/davita-packages.yml
+- aid: davita:davita-wp-v2-api
+  name: DaVita Wp V2 API
+  description: WordPress core REST namespace exposing DaVita dv-* content types
+  humanURL: https://davita.com/tools/
+  baseURL: https://www.davita.com/wp-json
+  tags:
+  - wp-v2
+  properties:
+  - type: OpenAPI
+    url: openapi/davita-wp-v2-api-openapi.yml
+  - type: Conventions
+    url: conventions/davita-conventions.yml
+  - type: ErrorCatalog
+    url: errors/davita-problem-types.yml
+  - type: DataModel
+    url: data-model/davita-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/davita-lifecycle.yml
+  - type: RateLimits
+    url: rate-limits/davita-rate-limits.yml
+  - type: Plans
+    url: plans/davita-plans-pricing.yml
+  - type: Conformance
+    url: conformance/davita-conformance.yml
+  - type: X-MCPServerCandidate
+    url: mcp/davita-mcp.yml
   - type: Packages
     url: packages/davita-packages.yml
 common:
+- type: Overlay
+  url: overlays/davita-wp-rest-overlay.yaml
+- type: AgentSkill
+  url: skills/_index.yml
 - type: Press Release Archive
   url: https://newsroom.davita.com/
 - type: Authentication
