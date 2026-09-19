@@ -96,6 +96,8 @@ apis:
   humanURL: https://davita.com/tools/
   baseURL: https://www.davita.com/wp-json
   tags:
+  - wp/v2
+  tags_raw:
   - wp-v2
   properties:
   - type: OpenAPI
