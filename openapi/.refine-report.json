@@ -1,0 +1,22 @@
+{
+  "provider": "davita",
+  "sources": [
+    "_original/davita-wp-rest.yml"
+  ],
+  "outputs": [
+    "davita-davita-v1-api-openapi.yml",
+    "davita-wp-v2-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "davita-wp-rest.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "davita-davita-v1-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "davita-wp-v2-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

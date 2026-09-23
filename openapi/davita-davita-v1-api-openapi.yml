@@ -1,0 +1,704 @@
+openapi: 3.2.0
+info:
+  title: DaVita Web REST API (WordPress REST, davita/v1 + dv-*…
+  version: wp-json-index-2026-09-05
+  description: Public, unauthenticated read API served by DaVita at https://www.davita.com/wp-json/.
+  contact:
+    name: DaVita
+    url: https://davita.com/help-center/contact-us/
+servers:
+- url: https://www.davita.com/wp-json
+  description: DaVita WordPress REST API root
+tags:
+- name: davita-v1
+  description: DaVita first-party REST namespace (davita/v1)
+paths:
+  /davita/v1:
+    get:
+      operationId: get_davita_v1
+      summary: GET /davita/v1
+      description: WordPress REST route /davita/v1 (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      tags:
+      - davita-v1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - array
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '404':
+          description: No route or resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+      parameters:
+      - name: namespace
+        in: query
+        required: false
+        schema:
+          default: davita/v1
+      - name: context
+        in: query
+        required: false
+        schema:
+          default: view
+  /davita/v1/comments/{postid}:
+    post:
+      operationId: post_davita_v1_comments_postid
+      summary: POST /davita/v1/comments/(?P[\d]+)
+      description: WordPress REST route /davita/v1/comments/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      tags:
+      - davita-v1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - array
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '404':
+          description: No route or resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+      parameters:
+      - name: postid
+        in: path
+        required: true
+        description: Post ID
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  description: Page number
+      security:
+      - applicationPassword: []
+      - cookieNonce: []
+  /davita/v1/comments/create:
+    post:
+      operationId: post_davita_v1_comments_create
+      summary: POST /davita/v1/comments/create
+      description: WordPress REST route /davita/v1/comments/create (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      tags:
+      - davita-v1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - array
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '404':
+          description: No route or resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: User token
+                content:
+                  type: string
+                  description: Comment content
+                postid:
+                  type: integer
+                  description: Post ID
+                rating:
+                  type: integer
+                  description: Rating
+                title:
+                  type: string
+                  description: Comment title
+                parentid:
+                  type: integer
+                  description: Parent Comment ID
+              required:
+              - token
+              - content
+              - postid
+      security:
+      - applicationPassword: []
+      - cookieNonce: []
+  /davita/v1/find-a-center:
+    get:
+      operationId: get_davita_v1_find_a_center
+      summary: GET /davita/v1/find-a-center
+      description: WordPress REST route /davita/v1/find-a-center (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      tags:
+      - davita-v1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - array
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '404':
+          description: No route or resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+      parameters:
+      - name: location
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Location (City, State name or Zip code)
+      - name: lat
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Latitude of the location
+      - name: lng
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Longitude of the location
+      - name: modalities
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Category of the center
+  /davita/v1/find-a-class:
+    get:
+      operationId: get_davita_v1_find_a_class
+      summary: GET /davita/v1/find-a-class
+      description: WordPress REST route /davita/v1/find-a-class (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      tags:
+      - davita-v1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - array
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '404':
+          description: No route or resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+      parameters:
+      - name: location
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Location (State name or Zip code)
+      - name: language
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Language (English or Spanish)
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Sorting method (Date or Distance)
+      - name: classes
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Class type (in-person or online)
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: The day of the class
+      - name: time
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Time of day for the class
+  /davita/v1/icons:
+    get:
+      operationId: get_davita_v1_icons
+      summary: GET /davita/v1/icons
+      description: WordPress REST route /davita/v1/icons (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      tags:
+      - davita-v1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - array
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '404':
+          description: No route or resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+      parameters:
+      - name: sets-only
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+  /davita/v1/icons/import:
+    get:
+      operationId: get_davita_v1_icons_import
+      summary: GET /davita/v1/icons/import
+      description: WordPress REST route /davita/v1/icons/import (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      tags:
+      - davita-v1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - array
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '404':
+          description: No route or resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+  /davita/v1/icons/list:
+    get:
+      operationId: get_davita_v1_icons_list
+      summary: GET /davita/v1/icons/list
+      description: WordPress REST route /davita/v1/icons/list (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      tags:
+      - davita-v1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - array
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '404':
+          description: No route or resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+  /davita/v1/icons/update:
+    post:
+      operationId: post_davita_v1_icons_update
+      summary: POST /davita/v1/icons/update
+      description: WordPress REST route /davita/v1/icons/update (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      tags:
+      - davita-v1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - array
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '404':
+          description: No route or resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  default: ''
+                keywords:
+                  type: string
+                  default: ''
+              required:
+              - name
+      security:
+      - applicationPassword: []
+      - cookieNonce: []
+  /davita/v1/playlist-details:
+    get:
+      operationId: get_davita_v1_playlist_details
+      summary: GET /davita/v1/playlist-details
+      description: WordPress REST route /davita/v1/playlist-details (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      tags:
+      - davita-v1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - array
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '404':
+          description: No route or resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+  /davita/v1/usda/food/{id}:
+    get:
+      operationId: get_davita_v1_usda_food_id
+      summary: GET /davita/v1/usda/food/(?P\d+)
+      description: WordPress REST route /davita/v1/usda/food/(?P\d+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      tags:
+      - davita-v1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - array
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '404':
+          description: No route or resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Food ID
+        schema:
+          type: integer
+  /davita/v1/usda/search:
+    get:
+      operationId: get_davita_v1_usda_search
+      summary: GET /davita/v1/usda/search
+      description: WordPress REST route /davita/v1/usda/search (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      tags:
+      - davita-v1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - array
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '404':
+          description: No route or resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+      parameters:
+      - name: food
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Search term
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Page number
+  /davita/v1/verify-token:
+    post:
+      operationId: post_davita_v1_verify_token
+      summary: POST /davita/v1/verify-token
+      description: WordPress REST route /davita/v1/verify-token (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      tags:
+      - davita-v1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - array
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '404':
+          description: No route or resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+      security:
+      - applicationPassword: []
+      - cookieNonce: []
+  /davita/v1/video-details:
+    get:
+      operationId: get_davita_v1_video_details
+      summary: GET /davita/v1/video-details
+      description: WordPress REST route /davita/v1/video-details (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      tags:
+      - davita-v1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - array
+        '400':
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+        '404':
+          description: No route or resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WPRestError'
+components:
+  schemas:
+    WPRestError:
+      type: object
+      description: WordPress REST error envelope observed live on this host (not RFC 9457).
+      properties:
+        code:
+          type: string
+          examples:
+          - rest_no_route
+          - rest_invalid_param
+          - rest_forbidden
+          - dv_token_invalid
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            status:
+              type: integer
+            params:
+              type: object
+            details:
+              type: object
+      required:
+      - code
+      - message
+      - data
+  securitySchemes:
+    applicationPassword:
+      type: http
+      scheme: basic
+      description: 'WordPress Application Passwords. Authorization endpoint declared by the index: https://davita.com/wp-admin/authorize-application.php. Not offered to the public; write routes are staff-only.'
+    cookieNonce:
+      type: apiKey
+      in: header
+      name: X-WP-Nonce
+      description: WordPress cookie authentication nonce, accepted per the Access-Control-Allow-Headers response header. Browser/session only.
+x-generated-from: https://www.davita.com/wp-json/ — WordPress REST route discovery index, mechanical transformation (route regex -> templated path, endpoint args -> parameters/requestBody). No operation, parameter, or response was invented.
+x-generated-on: '2026-09-05'

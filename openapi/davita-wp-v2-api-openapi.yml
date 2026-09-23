@@ -1,15 +1,8 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: DaVita Web REST API (WordPress REST, davita/v1 + dv-* content)
+  title: DaVita Web REST API (WordPress REST, davita/v1 + dv-*…
   version: wp-json-index-2026-09-05
-  description: 'Public, unauthenticated read API served by DaVita at https://www.davita.com/wp-json/. Derived mechanically
-    from the WordPress REST route discovery index that DaVita''s own host publishes at that URL (fetched 2026-09-05, HTTP
-    200, self-identifying as name "DaVita", url https://davita.com). Covers DaVita''s first-party davita/v1 namespace (dialysis-center
-    locator, Kidney Smart class finder, USDA food/nutrient lookup, video and comment endpoints) and the dv-* custom content
-    types (recipes, articles, glossary terms, videos, cookbooks, people, topics). Third-party plugin and WordPress administration
-    namespaces present in the same index (jetpack, kadence, akismet, cron-control, yoast, vip, two-factor, wp-site-health,
-    wp-block-editor) are deliberately excluded: they are not DaVita''s API surface. DaVita does not publish an OpenAPI definition
-    or developer documentation for this surface.'
+  description: Public, unauthenticated read API served by DaVita at https://www.davita.com/wp-json/.
   contact:
     name: DaVita
     url: https://davita.com/help-center/contact-us/
@@ -17,709 +10,16 @@ servers:
 - url: https://www.davita.com/wp-json
   description: DaVita WordPress REST API root
 tags:
-- name: davita-v1
-  description: DaVita first-party REST namespace (davita/v1)
-- name: wp-v2
+- name: wp/v2
   description: WordPress core REST namespace exposing DaVita dv-* content types
-components:
-  securitySchemes:
-    applicationPassword:
-      type: http
-      scheme: basic
-      description: 'WordPress Application Passwords. Authorization endpoint declared by the index: https://davita.com/wp-admin/authorize-application.php.
-        Not offered to the public; write routes are staff-only.'
-    cookieNonce:
-      type: apiKey
-      in: header
-      name: X-WP-Nonce
-      description: WordPress cookie authentication nonce, accepted per the Access-Control-Allow-Headers response header. Browser/session
-        only.
-  schemas:
-    WPRestError:
-      type: object
-      description: WordPress REST error envelope observed live on this host (not RFC 9457).
-      properties:
-        code:
-          type: string
-          examples:
-          - rest_no_route
-          - rest_invalid_param
-          - rest_forbidden
-          - dv_token_invalid
-        message:
-          type: string
-        data:
-          type: object
-          properties:
-            status:
-              type: integer
-            params:
-              type: object
-            details:
-              type: object
-      required:
-      - code
-      - message
-      - data
 paths:
-  /davita/v1:
-    get:
-      operationId: get_davita_v1
-      summary: GET /davita/v1
-      description: WordPress REST route /davita/v1 (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
-      tags:
-      - davita-v1
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type:
-                - object
-                - array
-        '400':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '401':
-          description: Not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '404':
-          description: No route or resource found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-      parameters:
-      - name: namespace
-        in: query
-        required: false
-        schema:
-          default: davita/v1
-      - name: context
-        in: query
-        required: false
-        schema:
-          default: view
-  /davita/v1/comments/{postid}:
-    post:
-      operationId: post_davita_v1_comments_postid
-      summary: POST /davita/v1/comments/(?P<postid>[\d]+)
-      description: WordPress REST route /davita/v1/comments/(?P<postid>[\d]+) (POST), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
-      tags:
-      - davita-v1
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type:
-                - object
-                - array
-        '400':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '401':
-          description: Not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '404':
-          description: No route or resource found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-      parameters:
-      - name: postid
-        in: path
-        required: true
-        description: Post ID
-        schema:
-          type: integer
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                page:
-                  type: integer
-                  description: Page number
-      security:
-      - applicationPassword: []
-      - cookieNonce: []
-  /davita/v1/comments/create:
-    post:
-      operationId: post_davita_v1_comments_create
-      summary: POST /davita/v1/comments/create
-      description: WordPress REST route /davita/v1/comments/create (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
-      tags:
-      - davita-v1
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type:
-                - object
-                - array
-        '400':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '401':
-          description: Not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '404':
-          description: No route or resource found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                token:
-                  type: string
-                  description: User token
-                content:
-                  type: string
-                  description: Comment content
-                postid:
-                  type: integer
-                  description: Post ID
-                rating:
-                  type: integer
-                  description: Rating
-                title:
-                  type: string
-                  description: Comment title
-                parentid:
-                  type: integer
-                  description: Parent Comment ID
-              required:
-              - token
-              - content
-              - postid
-      security:
-      - applicationPassword: []
-      - cookieNonce: []
-  /davita/v1/find-a-center:
-    get:
-      operationId: get_davita_v1_find_a_center
-      summary: GET /davita/v1/find-a-center
-      description: WordPress REST route /davita/v1/find-a-center (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
-      tags:
-      - davita-v1
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type:
-                - object
-                - array
-        '400':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '401':
-          description: Not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '404':
-          description: No route or resource found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-      parameters:
-      - name: location
-        in: query
-        required: true
-        schema:
-          type: string
-        description: Location (City, State name or Zip code)
-      - name: lat
-        in: query
-        required: false
-        schema:
-          type: string
-        description: Latitude of the location
-      - name: lng
-        in: query
-        required: false
-        schema:
-          type: string
-        description: Longitude of the location
-      - name: modalities
-        in: query
-        required: false
-        schema:
-          type: integer
-        description: Category of the center
-  /davita/v1/find-a-class:
-    get:
-      operationId: get_davita_v1_find_a_class
-      summary: GET /davita/v1/find-a-class
-      description: WordPress REST route /davita/v1/find-a-class (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
-      tags:
-      - davita-v1
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type:
-                - object
-                - array
-        '400':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '401':
-          description: Not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '404':
-          description: No route or resource found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-      parameters:
-      - name: location
-        in: query
-        required: false
-        schema:
-          type: string
-        description: Location (State name or Zip code)
-      - name: language
-        in: query
-        required: false
-        schema:
-          type: integer
-        description: Language (English or Spanish)
-      - name: sort
-        in: query
-        required: false
-        schema:
-          type: integer
-        description: Sorting method (Date or Distance)
-      - name: classes
-        in: query
-        required: false
-        schema:
-          type: integer
-        description: Class type (in-person or online)
-      - name: days
-        in: query
-        required: false
-        schema:
-          type: integer
-        description: The day of the class
-      - name: time
-        in: query
-        required: false
-        schema:
-          type: string
-        description: Time of day for the class
-  /davita/v1/icons:
-    get:
-      operationId: get_davita_v1_icons
-      summary: GET /davita/v1/icons
-      description: WordPress REST route /davita/v1/icons (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
-      tags:
-      - davita-v1
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type:
-                - object
-                - array
-        '400':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '401':
-          description: Not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '404':
-          description: No route or resource found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-      parameters:
-      - name: sets-only
-        in: query
-        required: false
-        schema:
-          type: boolean
-          default: true
-  /davita/v1/icons/import:
-    get:
-      operationId: get_davita_v1_icons_import
-      summary: GET /davita/v1/icons/import
-      description: WordPress REST route /davita/v1/icons/import (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
-      tags:
-      - davita-v1
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type:
-                - object
-                - array
-        '400':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '401':
-          description: Not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '404':
-          description: No route or resource found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-  /davita/v1/icons/list:
-    get:
-      operationId: get_davita_v1_icons_list
-      summary: GET /davita/v1/icons/list
-      description: WordPress REST route /davita/v1/icons/list (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
-      tags:
-      - davita-v1
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type:
-                - object
-                - array
-        '400':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '401':
-          description: Not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '404':
-          description: No route or resource found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-  /davita/v1/icons/update:
-    post:
-      operationId: post_davita_v1_icons_update
-      summary: POST /davita/v1/icons/update
-      description: WordPress REST route /davita/v1/icons/update (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
-      tags:
-      - davita-v1
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type:
-                - object
-                - array
-        '400':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '401':
-          description: Not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '404':
-          description: No route or resource found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  default: ''
-                keywords:
-                  type: string
-                  default: ''
-              required:
-              - name
-      security:
-      - applicationPassword: []
-      - cookieNonce: []
-  /davita/v1/playlist-details:
-    get:
-      operationId: get_davita_v1_playlist_details
-      summary: GET /davita/v1/playlist-details
-      description: WordPress REST route /davita/v1/playlist-details (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
-      tags:
-      - davita-v1
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type:
-                - object
-                - array
-        '400':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '401':
-          description: Not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '404':
-          description: No route or resource found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-  /davita/v1/usda/food/{id}:
-    get:
-      operationId: get_davita_v1_usda_food_id
-      summary: GET /davita/v1/usda/food/(?P<id>\d+)
-      description: WordPress REST route /davita/v1/usda/food/(?P<id>\d+) (GET), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
-      tags:
-      - davita-v1
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type:
-                - object
-                - array
-        '400':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '401':
-          description: Not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '404':
-          description: No route or resource found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: Food ID
-        schema:
-          type: integer
-  /davita/v1/usda/search:
-    get:
-      operationId: get_davita_v1_usda_search
-      summary: GET /davita/v1/usda/search
-      description: WordPress REST route /davita/v1/usda/search (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
-      tags:
-      - davita-v1
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type:
-                - object
-                - array
-        '400':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '401':
-          description: Not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '404':
-          description: No route or resource found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-      parameters:
-      - name: food
-        in: query
-        required: true
-        schema:
-          type: string
-        description: Search term
-      - name: page
-        in: query
-        required: false
-        schema:
-          type: integer
-        description: Page number
-  /davita/v1/verify-token:
-    post:
-      operationId: post_davita_v1_verify_token
-      summary: POST /davita/v1/verify-token
-      description: WordPress REST route /davita/v1/verify-token (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
-      tags:
-      - davita-v1
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type:
-                - object
-                - array
-        '400':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '401':
-          description: Not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '404':
-          description: No route or resource found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-      security:
-      - applicationPassword: []
-      - cookieNonce: []
-  /davita/v1/video-details:
-    get:
-      operationId: get_davita_v1_video_details
-      summary: GET /davita/v1/video-details
-      description: WordPress REST route /davita/v1/video-details (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
-      tags:
-      - davita-v1
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type:
-                - object
-                - array
-        '400':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '401':
-          description: Not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
-        '404':
-          description: No route or resource found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WPRestError'
   /wp/v2:
     get:
       operationId: get_wp_v2
       summary: GET /wp/v2
       description: WordPress REST route /wp/v2 (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -764,7 +64,7 @@ paths:
       summary: GET /wp/v2/categories
       description: WordPress REST route /wp/v2/categories (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -903,7 +203,7 @@ paths:
       summary: POST /wp/v2/categories
       description: WordPress REST route /wp/v2/categories (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -961,11 +261,10 @@ paths:
   /wp/v2/categories/{id}:
     get:
       operationId: get_wp_v2_categories_id
-      summary: GET /wp/v2/categories/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/categories/(?P<id>[\d]+) (GET), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/categories/(?P[\d]+)
+      description: WordPress REST route /wp/v2/categories/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -1013,11 +312,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     post:
       operationId: post_wp_v2_categories_id
-      summary: POST /wp/v2/categories/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/categories/(?P<id>[\d]+) (POST), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/categories/(?P[\d]+)
+      description: WordPress REST route /wp/v2/categories/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -1079,11 +377,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_categories_id
-      summary: PUT /wp/v2/categories/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/categories/(?P<id>[\d]+) (PUT), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/categories/(?P[\d]+)
+      description: WordPress REST route /wp/v2/categories/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -1145,11 +442,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_categories_id
-      summary: PATCH /wp/v2/categories/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/categories/(?P<id>[\d]+) (PATCH), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/categories/(?P[\d]+)
+      description: WordPress REST route /wp/v2/categories/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -1211,11 +507,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_categories_id
-      summary: DELETE /wp/v2/categories/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/categories/(?P<id>[\d]+) (DELETE), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/categories/(?P[\d]+)
+      description: WordPress REST route /wp/v2/categories/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -1270,7 +565,7 @@ paths:
       summary: GET /wp/v2/dv-article
       description: WordPress REST route /wp/v2/dv-article (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -1551,7 +846,7 @@ paths:
       summary: POST /wp/v2/dv-article
       description: WordPress REST route /wp/v2/dv-article (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -1662,11 +957,10 @@ paths:
   /wp/v2/dv-article/{id}:
     get:
       operationId: get_wp_v2_dv_article_id
-      summary: GET /wp/v2/dv-article/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-article/(?P<id>[\d]+) (GET), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-article/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-article/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -1726,11 +1020,10 @@ paths:
         description: The password for the post if it is password protected.
     post:
       operationId: post_wp_v2_dv_article_id
-      summary: POST /wp/v2/dv-article/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-article/(?P<id>[\d]+) (POST), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-article/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-article/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -1785,7 +1078,7 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: &id001
+                  enum:
                   - publish
                   - future
                   - draft
@@ -1847,11 +1140,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_article_id
-      summary: PUT /wp/v2/dv-article/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-article/(?P<id>[\d]+) (PUT), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-article/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-article/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -1906,7 +1198,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id001
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -1955,11 +1260,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_article_id
-      summary: PATCH /wp/v2/dv-article/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-article/(?P<id>[\d]+) (PATCH), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-article/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-article/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -2014,7 +1318,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id001
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -2063,11 +1380,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_article_id
-      summary: DELETE /wp/v2/dv-article/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-article/(?P<id>[\d]+) (DELETE), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-article/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-article/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -2119,11 +1435,10 @@ paths:
   /wp/v2/dv-article/{id}/autosaves:
     get:
       operationId: get_wp_v2_dv_article_id_autosaves
-      summary: GET /wp/v2/dv-article/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-article/(?P<id>[\d]+)/autosaves (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-article/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-article/(?P[\d]+)/autosaves (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -2176,11 +1491,10 @@ paths:
           type: string
     post:
       operationId: post_wp_v2_dv_article_id_autosaves
-      summary: POST /wp/v2/dv-article/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-article/(?P<id>[\d]+)/autosaves (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-article/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-article/(?P[\d]+)/autosaves (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -2300,11 +1614,10 @@ paths:
   /wp/v2/dv-article/{parent}/autosaves/{id}:
     get:
       operationId: get_wp_v2_dv_article_parent_autosaves_id
-      summary: GET /wp/v2/dv-article/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-article/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+) (GET), as declared by
-        the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-article/(?P[\d]+)/autosaves/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-article/(?P[\d]+)/autosaves/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -2359,11 +1672,10 @@ paths:
   /wp/v2/dv-article/{parent}/revisions:
     get:
       operationId: get_wp_v2_dv_article_parent_revisions
-      summary: GET /wp/v2/dv-article/(?P<parent>[\d]+)/revisions
-      description: WordPress REST route /wp/v2/dv-article/(?P<parent>[\d]+)/revisions (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-article/(?P[\d]+)/revisions
+      description: WordPress REST route /wp/v2/dv-article/(?P[\d]+)/revisions (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -2483,11 +1795,10 @@ paths:
   /wp/v2/dv-article/{parent}/revisions/{id}:
     get:
       operationId: get_wp_v2_dv_article_parent_revisions_id
-      summary: GET /wp/v2/dv-article/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-article/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+) (GET), as declared by
-        the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-article/(?P[\d]+)/revisions/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-article/(?P[\d]+)/revisions/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -2541,11 +1852,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     delete:
       operationId: delete_wp_v2_dv_article_parent_revisions_id
-      summary: DELETE /wp/v2/dv-article/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-article/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+) (DELETE), as declared
-        by the route discovery index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-article/(?P[\d]+)/revisions/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-article/(?P[\d]+)/revisions/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -2606,7 +1916,7 @@ paths:
       summary: GET /wp/v2/dv-cookbook
       description: WordPress REST route /wp/v2/dv-cookbook (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -2824,7 +2134,7 @@ paths:
       summary: POST /wp/v2/dv-cookbook
       description: WordPress REST route /wp/v2/dv-cookbook (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -2917,11 +2227,10 @@ paths:
   /wp/v2/dv-cookbook/{id}:
     get:
       operationId: get_wp_v2_dv_cookbook_id
-      summary: GET /wp/v2/dv-cookbook/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-cookbook/(?P<id>[\d]+) (GET), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-cookbook/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-cookbook/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -2981,11 +2290,10 @@ paths:
         description: The password for the post if it is password protected.
     post:
       operationId: post_wp_v2_dv_cookbook_id
-      summary: POST /wp/v2/dv-cookbook/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-cookbook/(?P<id>[\d]+) (POST), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-cookbook/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-cookbook/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -3040,7 +2348,7 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: &id002
+                  enum:
                   - publish
                   - future
                   - draft
@@ -3084,11 +2392,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_cookbook_id
-      summary: PUT /wp/v2/dv-cookbook/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-cookbook/(?P<id>[\d]+) (PUT), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-cookbook/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-cookbook/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -3143,7 +2450,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id002
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -3174,11 +2494,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_cookbook_id
-      summary: PATCH /wp/v2/dv-cookbook/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-cookbook/(?P<id>[\d]+) (PATCH), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-cookbook/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-cookbook/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -3233,7 +2552,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id002
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -3264,11 +2596,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_cookbook_id
-      summary: DELETE /wp/v2/dv-cookbook/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-cookbook/(?P<id>[\d]+) (DELETE), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-cookbook/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-cookbook/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -3320,11 +2651,10 @@ paths:
   /wp/v2/dv-cookbook/{id}/autosaves:
     get:
       operationId: get_wp_v2_dv_cookbook_id_autosaves
-      summary: GET /wp/v2/dv-cookbook/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-cookbook/(?P<id>[\d]+)/autosaves (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-cookbook/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-cookbook/(?P[\d]+)/autosaves (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -3377,11 +2707,10 @@ paths:
           type: string
     post:
       operationId: post_wp_v2_dv_cookbook_id_autosaves
-      summary: POST /wp/v2/dv-cookbook/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-cookbook/(?P<id>[\d]+)/autosaves (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-cookbook/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-cookbook/(?P[\d]+)/autosaves (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -3483,11 +2812,10 @@ paths:
   /wp/v2/dv-cookbook/{parent}/autosaves/{id}:
     get:
       operationId: get_wp_v2_dv_cookbook_parent_autosaves_id
-      summary: GET /wp/v2/dv-cookbook/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-cookbook/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+) (GET), as declared by
-        the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-cookbook/(?P[\d]+)/autosaves/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-cookbook/(?P[\d]+)/autosaves/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -3545,7 +2873,7 @@ paths:
       summary: GET /wp/v2/dv-dialysis-center
       description: WordPress REST route /wp/v2/dv-dialysis-center (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -3763,7 +3091,7 @@ paths:
       summary: POST /wp/v2/dv-dialysis-center
       description: WordPress REST route /wp/v2/dv-dialysis-center (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -3853,11 +3181,10 @@ paths:
   /wp/v2/dv-dialysis-center/{id}:
     get:
       operationId: get_wp_v2_dv_dialysis_center_id
-      summary: GET /wp/v2/dv-dialysis-center/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P<id>[\d]+) (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-dialysis-center/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -3917,11 +3244,10 @@ paths:
         description: The password for the post if it is password protected.
     post:
       operationId: post_wp_v2_dv_dialysis_center_id
-      summary: POST /wp/v2/dv-dialysis-center/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P<id>[\d]+) (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-dialysis-center/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -3976,7 +3302,7 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: &id003
+                  enum:
                   - publish
                   - future
                   - draft
@@ -4017,11 +3343,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_dialysis_center_id
-      summary: PUT /wp/v2/dv-dialysis-center/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P<id>[\d]+) (PUT), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-dialysis-center/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -4076,7 +3401,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id003
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -4104,11 +3442,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_dialysis_center_id
-      summary: PATCH /wp/v2/dv-dialysis-center/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P<id>[\d]+) (PATCH), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-dialysis-center/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -4163,7 +3500,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id003
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -4191,11 +3541,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_dialysis_center_id
-      summary: DELETE /wp/v2/dv-dialysis-center/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P<id>[\d]+) (DELETE), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-dialysis-center/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -4247,11 +3596,10 @@ paths:
   /wp/v2/dv-dialysis-center/{id}/autosaves:
     get:
       operationId: get_wp_v2_dv_dialysis_center_id_autosaves
-      summary: GET /wp/v2/dv-dialysis-center/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P<id>[\d]+)/autosaves (GET), as declared by the route
-        discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-dialysis-center/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P[\d]+)/autosaves (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -4304,11 +3652,10 @@ paths:
           type: string
     post:
       operationId: post_wp_v2_dv_dialysis_center_id_autosaves
-      summary: POST /wp/v2/dv-dialysis-center/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P<id>[\d]+)/autosaves (POST), as declared by the route
-        discovery index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-dialysis-center/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P[\d]+)/autosaves (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -4407,11 +3754,10 @@ paths:
   /wp/v2/dv-dialysis-center/{parent}/autosaves/{id}:
     get:
       operationId: get_wp_v2_dv_dialysis_center_parent_autosaves_id
-      summary: GET /wp/v2/dv-dialysis-center/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+) (GET), as declared
-        by the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-dialysis-center/(?P[\d]+)/autosaves/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-dialysis-center/(?P[\d]+)/autosaves/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -4469,7 +3815,7 @@ paths:
       summary: GET /wp/v2/dv-food-analyzer
       description: WordPress REST route /wp/v2/dv-food-analyzer (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -4687,7 +4033,7 @@ paths:
       summary: POST /wp/v2/dv-food-analyzer
       description: WordPress REST route /wp/v2/dv-food-analyzer (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -4777,11 +4123,10 @@ paths:
   /wp/v2/dv-food-analyzer/{id}:
     get:
       operationId: get_wp_v2_dv_food_analyzer_id
-      summary: GET /wp/v2/dv-food-analyzer/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P<id>[\d]+) (GET), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-food-analyzer/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -4841,11 +4186,10 @@ paths:
         description: The password for the post if it is password protected.
     post:
       operationId: post_wp_v2_dv_food_analyzer_id
-      summary: POST /wp/v2/dv-food-analyzer/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P<id>[\d]+) (POST), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-food-analyzer/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -4900,7 +4244,7 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: &id004
+                  enum:
                   - publish
                   - future
                   - draft
@@ -4941,11 +4285,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_food_analyzer_id
-      summary: PUT /wp/v2/dv-food-analyzer/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P<id>[\d]+) (PUT), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-food-analyzer/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -5000,7 +4343,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id004
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -5028,11 +4384,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_food_analyzer_id
-      summary: PATCH /wp/v2/dv-food-analyzer/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P<id>[\d]+) (PATCH), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-food-analyzer/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -5087,7 +4442,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id004
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -5115,11 +4483,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_food_analyzer_id
-      summary: DELETE /wp/v2/dv-food-analyzer/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P<id>[\d]+) (DELETE), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-food-analyzer/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -5171,11 +4538,10 @@ paths:
   /wp/v2/dv-food-analyzer/{id}/autosaves:
     get:
       operationId: get_wp_v2_dv_food_analyzer_id_autosaves
-      summary: GET /wp/v2/dv-food-analyzer/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P<id>[\d]+)/autosaves (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-food-analyzer/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P[\d]+)/autosaves (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -5228,11 +4594,10 @@ paths:
           type: string
     post:
       operationId: post_wp_v2_dv_food_analyzer_id_autosaves
-      summary: POST /wp/v2/dv-food-analyzer/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P<id>[\d]+)/autosaves (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-food-analyzer/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P[\d]+)/autosaves (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -5331,11 +4696,10 @@ paths:
   /wp/v2/dv-food-analyzer/{parent}/autosaves/{id}:
     get:
       operationId: get_wp_v2_dv_food_analyzer_parent_autosaves_id
-      summary: GET /wp/v2/dv-food-analyzer/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+) (GET), as declared
-        by the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-food-analyzer/(?P[\d]+)/autosaves/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-food-analyzer/(?P[\d]+)/autosaves/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -5393,7 +4757,7 @@ paths:
       summary: GET /wp/v2/dv-glossary-term
       description: WordPress REST route /wp/v2/dv-glossary-term (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -5632,7 +4996,7 @@ paths:
       summary: POST /wp/v2/dv-glossary-term
       description: WordPress REST route /wp/v2/dv-glossary-term (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -5724,11 +5088,10 @@ paths:
   /wp/v2/dv-glossary-term/{id}:
     get:
       operationId: get_wp_v2_dv_glossary_term_id
-      summary: GET /wp/v2/dv-glossary-term/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-glossary-term/(?P<id>[\d]+) (GET), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-glossary-term/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-glossary-term/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -5782,11 +5145,10 @@ paths:
         description: The password for the post if it is password protected.
     post:
       operationId: post_wp_v2_dv_glossary_term_id
-      summary: POST /wp/v2/dv-glossary-term/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-glossary-term/(?P<id>[\d]+) (POST), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-glossary-term/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-glossary-term/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -5841,7 +5203,7 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: &id005
+                  enum:
                   - publish
                   - future
                   - draft
@@ -5884,11 +5246,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_glossary_term_id
-      summary: PUT /wp/v2/dv-glossary-term/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-glossary-term/(?P<id>[\d]+) (PUT), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-glossary-term/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-glossary-term/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -5943,7 +5304,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id005
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -5973,11 +5347,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_glossary_term_id
-      summary: PATCH /wp/v2/dv-glossary-term/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-glossary-term/(?P<id>[\d]+) (PATCH), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-glossary-term/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-glossary-term/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -6032,7 +5405,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id005
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -6062,11 +5448,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_glossary_term_id
-      summary: DELETE /wp/v2/dv-glossary-term/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-glossary-term/(?P<id>[\d]+) (DELETE), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-glossary-term/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-glossary-term/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -6118,11 +5503,10 @@ paths:
   /wp/v2/dv-glossary-term/{id}/autosaves:
     get:
       operationId: get_wp_v2_dv_glossary_term_id_autosaves
-      summary: GET /wp/v2/dv-glossary-term/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-glossary-term/(?P<id>[\d]+)/autosaves (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-glossary-term/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-glossary-term/(?P[\d]+)/autosaves (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -6175,11 +5559,10 @@ paths:
           type: string
     post:
       operationId: post_wp_v2_dv_glossary_term_id_autosaves
-      summary: POST /wp/v2/dv-glossary-term/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-glossary-term/(?P<id>[\d]+)/autosaves (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-glossary-term/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-glossary-term/(?P[\d]+)/autosaves (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -6280,11 +5663,10 @@ paths:
   /wp/v2/dv-glossary-term/{parent}/autosaves/{id}:
     get:
       operationId: get_wp_v2_dv_glossary_term_parent_autosaves_id
-      summary: GET /wp/v2/dv-glossary-term/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-glossary-term/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+) (GET), as declared
-        by the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-glossary-term/(?P[\d]+)/autosaves/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-glossary-term/(?P[\d]+)/autosaves/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -6342,7 +5724,7 @@ paths:
       summary: GET /wp/v2/dv-image-category
       description: WordPress REST route /wp/v2/dv-image-category (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -6481,7 +5863,7 @@ paths:
       summary: POST /wp/v2/dv-image-category
       description: WordPress REST route /wp/v2/dv-image-category (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -6539,11 +5921,10 @@ paths:
   /wp/v2/dv-image-category/{id}:
     get:
       operationId: get_wp_v2_dv_image_category_id
-      summary: GET /wp/v2/dv-image-category/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-image-category/(?P<id>[\d]+) (GET), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-image-category/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-image-category/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -6591,11 +5972,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     post:
       operationId: post_wp_v2_dv_image_category_id
-      summary: POST /wp/v2/dv-image-category/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-image-category/(?P<id>[\d]+) (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-image-category/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-image-category/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -6657,11 +6037,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_image_category_id
-      summary: PUT /wp/v2/dv-image-category/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-image-category/(?P<id>[\d]+) (PUT), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-image-category/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-image-category/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -6723,11 +6102,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_image_category_id
-      summary: PATCH /wp/v2/dv-image-category/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-image-category/(?P<id>[\d]+) (PATCH), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-image-category/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-image-category/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -6789,11 +6167,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_image_category_id
-      summary: DELETE /wp/v2/dv-image-category/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-image-category/(?P<id>[\d]+) (DELETE), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-image-category/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-image-category/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -6848,7 +6225,7 @@ paths:
       summary: GET /wp/v2/dv-person
       description: WordPress REST route /wp/v2/dv-person (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -7091,7 +6468,7 @@ paths:
       summary: POST /wp/v2/dv-person
       description: WordPress REST route /wp/v2/dv-person (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -7190,11 +6567,10 @@ paths:
   /wp/v2/dv-person/{id}:
     get:
       operationId: get_wp_v2_dv_person_id
-      summary: GET /wp/v2/dv-person/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-person/(?P<id>[\d]+) (GET), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-person/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-person/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -7254,11 +6630,10 @@ paths:
         description: The password for the post if it is password protected.
     post:
       operationId: post_wp_v2_dv_person_id
-      summary: POST /wp/v2/dv-person/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-person/(?P<id>[\d]+) (POST), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-person/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-person/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -7313,7 +6688,7 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: &id006
+                  enum:
                   - publish
                   - future
                   - draft
@@ -7363,11 +6738,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_person_id
-      summary: PUT /wp/v2/dv-person/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-person/(?P<id>[\d]+) (PUT), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-person/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-person/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -7422,7 +6796,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id006
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -7459,11 +6846,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_person_id
-      summary: PATCH /wp/v2/dv-person/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-person/(?P<id>[\d]+) (PATCH), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-person/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-person/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -7518,7 +6904,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id006
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -7555,11 +6954,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_person_id
-      summary: DELETE /wp/v2/dv-person/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-person/(?P<id>[\d]+) (DELETE), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-person/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-person/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -7611,11 +7009,10 @@ paths:
   /wp/v2/dv-person/{id}/autosaves:
     get:
       operationId: get_wp_v2_dv_person_id_autosaves
-      summary: GET /wp/v2/dv-person/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-person/(?P<id>[\d]+)/autosaves (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-person/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-person/(?P[\d]+)/autosaves (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -7668,11 +7065,10 @@ paths:
           type: string
     post:
       operationId: post_wp_v2_dv_person_id_autosaves
-      summary: POST /wp/v2/dv-person/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-person/(?P<id>[\d]+)/autosaves (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-person/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-person/(?P[\d]+)/autosaves (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -7777,11 +7173,10 @@ paths:
   /wp/v2/dv-person/{parent}/autosaves/{id}:
     get:
       operationId: get_wp_v2_dv_person_parent_autosaves_id
-      summary: GET /wp/v2/dv-person/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-person/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+) (GET), as declared by the
-        route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-person/(?P[\d]+)/autosaves/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-person/(?P[\d]+)/autosaves/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -7839,7 +7234,7 @@ paths:
       summary: GET /wp/v2/dv-recipe
       description: WordPress REST route /wp/v2/dv-recipe (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -8168,7 +7563,7 @@ paths:
       summary: POST /wp/v2/dv-recipe
       description: WordPress REST route /wp/v2/dv-recipe (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -8314,7 +7709,7 @@ paths:
       summary: GET /wp/v2/dv-recipe-category
       description: WordPress REST route /wp/v2/dv-recipe-category (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -8453,7 +7848,7 @@ paths:
       summary: POST /wp/v2/dv-recipe-category
       description: WordPress REST route /wp/v2/dv-recipe-category (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -8511,11 +7906,10 @@ paths:
   /wp/v2/dv-recipe-category/{id}:
     get:
       operationId: get_wp_v2_dv_recipe_category_id
-      summary: GET /wp/v2/dv-recipe-category/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-category/(?P<id>[\d]+) (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-recipe-category/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-category/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -8563,11 +7957,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     post:
       operationId: post_wp_v2_dv_recipe_category_id
-      summary: POST /wp/v2/dv-recipe-category/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-category/(?P<id>[\d]+) (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-recipe-category/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-category/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -8629,11 +8022,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_recipe_category_id
-      summary: PUT /wp/v2/dv-recipe-category/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-category/(?P<id>[\d]+) (PUT), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-recipe-category/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-category/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -8695,11 +8087,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_recipe_category_id
-      summary: PATCH /wp/v2/dv-recipe-category/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-category/(?P<id>[\d]+) (PATCH), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-recipe-category/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-category/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -8761,11 +8152,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_recipe_category_id
-      summary: DELETE /wp/v2/dv-recipe-category/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-category/(?P<id>[\d]+) (DELETE), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-recipe-category/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-category/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -8820,7 +8210,7 @@ paths:
       summary: GET /wp/v2/dv-recipe-cuisine-tag
       description: WordPress REST route /wp/v2/dv-recipe-cuisine-tag (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -8959,7 +8349,7 @@ paths:
       summary: POST /wp/v2/dv-recipe-cuisine-tag
       description: WordPress REST route /wp/v2/dv-recipe-cuisine-tag (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -9017,11 +8407,10 @@ paths:
   /wp/v2/dv-recipe-cuisine-tag/{id}:
     get:
       operationId: get_wp_v2_dv_recipe_cuisine_tag_id
-      summary: GET /wp/v2/dv-recipe-cuisine-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-cuisine-tag/(?P<id>[\d]+) (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-recipe-cuisine-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-cuisine-tag/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -9069,11 +8458,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     post:
       operationId: post_wp_v2_dv_recipe_cuisine_tag_id
-      summary: POST /wp/v2/dv-recipe-cuisine-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-cuisine-tag/(?P<id>[\d]+) (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-recipe-cuisine-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-cuisine-tag/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -9135,11 +8523,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_recipe_cuisine_tag_id
-      summary: PUT /wp/v2/dv-recipe-cuisine-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-cuisine-tag/(?P<id>[\d]+) (PUT), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-recipe-cuisine-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-cuisine-tag/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -9201,11 +8588,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_recipe_cuisine_tag_id
-      summary: PATCH /wp/v2/dv-recipe-cuisine-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-cuisine-tag/(?P<id>[\d]+) (PATCH), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-recipe-cuisine-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-cuisine-tag/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -9267,11 +8653,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_recipe_cuisine_tag_id
-      summary: DELETE /wp/v2/dv-recipe-cuisine-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-cuisine-tag/(?P<id>[\d]+) (DELETE), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-recipe-cuisine-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-cuisine-tag/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -9326,7 +8711,7 @@ paths:
       summary: GET /wp/v2/dv-recipe-diet-tag
       description: WordPress REST route /wp/v2/dv-recipe-diet-tag (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -9465,7 +8850,7 @@ paths:
       summary: POST /wp/v2/dv-recipe-diet-tag
       description: WordPress REST route /wp/v2/dv-recipe-diet-tag (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -9523,11 +8908,10 @@ paths:
   /wp/v2/dv-recipe-diet-tag/{id}:
     get:
       operationId: get_wp_v2_dv_recipe_diet_tag_id
-      summary: GET /wp/v2/dv-recipe-diet-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-diet-tag/(?P<id>[\d]+) (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-recipe-diet-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-diet-tag/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -9575,11 +8959,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     post:
       operationId: post_wp_v2_dv_recipe_diet_tag_id
-      summary: POST /wp/v2/dv-recipe-diet-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-diet-tag/(?P<id>[\d]+) (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-recipe-diet-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-diet-tag/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -9641,11 +9024,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_recipe_diet_tag_id
-      summary: PUT /wp/v2/dv-recipe-diet-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-diet-tag/(?P<id>[\d]+) (PUT), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-recipe-diet-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-diet-tag/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -9707,11 +9089,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_recipe_diet_tag_id
-      summary: PATCH /wp/v2/dv-recipe-diet-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-diet-tag/(?P<id>[\d]+) (PATCH), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-recipe-diet-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-diet-tag/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -9773,11 +9154,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_recipe_diet_tag_id
-      summary: DELETE /wp/v2/dv-recipe-diet-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-diet-tag/(?P<id>[\d]+) (DELETE), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-recipe-diet-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-diet-tag/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -9832,7 +9212,7 @@ paths:
       summary: GET /wp/v2/dv-recipe-dish-type
       description: WordPress REST route /wp/v2/dv-recipe-dish-type (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -9971,7 +9351,7 @@ paths:
       summary: POST /wp/v2/dv-recipe-dish-type
       description: WordPress REST route /wp/v2/dv-recipe-dish-type (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -10029,11 +9409,10 @@ paths:
   /wp/v2/dv-recipe-dish-type/{id}:
     get:
       operationId: get_wp_v2_dv_recipe_dish_type_id
-      summary: GET /wp/v2/dv-recipe-dish-type/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-dish-type/(?P<id>[\d]+) (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-recipe-dish-type/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-dish-type/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -10081,11 +9460,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     post:
       operationId: post_wp_v2_dv_recipe_dish_type_id
-      summary: POST /wp/v2/dv-recipe-dish-type/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-dish-type/(?P<id>[\d]+) (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-recipe-dish-type/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-dish-type/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -10147,11 +9525,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_recipe_dish_type_id
-      summary: PUT /wp/v2/dv-recipe-dish-type/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-dish-type/(?P<id>[\d]+) (PUT), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-recipe-dish-type/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-dish-type/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -10213,11 +9590,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_recipe_dish_type_id
-      summary: PATCH /wp/v2/dv-recipe-dish-type/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-dish-type/(?P<id>[\d]+) (PATCH), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-recipe-dish-type/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-dish-type/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -10279,11 +9655,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_recipe_dish_type_id
-      summary: DELETE /wp/v2/dv-recipe-dish-type/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-dish-type/(?P<id>[\d]+) (DELETE), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-recipe-dish-type/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-dish-type/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -10338,7 +9713,7 @@ paths:
       summary: GET /wp/v2/dv-recipe-holiday-tag
       description: WordPress REST route /wp/v2/dv-recipe-holiday-tag (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -10477,7 +9852,7 @@ paths:
       summary: POST /wp/v2/dv-recipe-holiday-tag
       description: WordPress REST route /wp/v2/dv-recipe-holiday-tag (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -10535,11 +9910,10 @@ paths:
   /wp/v2/dv-recipe-holiday-tag/{id}:
     get:
       operationId: get_wp_v2_dv_recipe_holiday_tag_id
-      summary: GET /wp/v2/dv-recipe-holiday-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-holiday-tag/(?P<id>[\d]+) (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-recipe-holiday-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-holiday-tag/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -10587,11 +9961,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     post:
       operationId: post_wp_v2_dv_recipe_holiday_tag_id
-      summary: POST /wp/v2/dv-recipe-holiday-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-holiday-tag/(?P<id>[\d]+) (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-recipe-holiday-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-holiday-tag/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -10653,11 +10026,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_recipe_holiday_tag_id
-      summary: PUT /wp/v2/dv-recipe-holiday-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-holiday-tag/(?P<id>[\d]+) (PUT), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-recipe-holiday-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-holiday-tag/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -10719,11 +10091,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_recipe_holiday_tag_id
-      summary: PATCH /wp/v2/dv-recipe-holiday-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-holiday-tag/(?P<id>[\d]+) (PATCH), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-recipe-holiday-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-holiday-tag/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -10785,11 +10156,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_recipe_holiday_tag_id
-      summary: DELETE /wp/v2/dv-recipe-holiday-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-holiday-tag/(?P<id>[\d]+) (DELETE), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-recipe-holiday-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-holiday-tag/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -10844,7 +10214,7 @@ paths:
       summary: GET /wp/v2/dv-recipe-method-tag
       description: WordPress REST route /wp/v2/dv-recipe-method-tag (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -10983,7 +10353,7 @@ paths:
       summary: POST /wp/v2/dv-recipe-method-tag
       description: WordPress REST route /wp/v2/dv-recipe-method-tag (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -11041,11 +10411,10 @@ paths:
   /wp/v2/dv-recipe-method-tag/{id}:
     get:
       operationId: get_wp_v2_dv_recipe_method_tag_id
-      summary: GET /wp/v2/dv-recipe-method-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-method-tag/(?P<id>[\d]+) (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-recipe-method-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-method-tag/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -11093,11 +10462,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     post:
       operationId: post_wp_v2_dv_recipe_method_tag_id
-      summary: POST /wp/v2/dv-recipe-method-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-method-tag/(?P<id>[\d]+) (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-recipe-method-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-method-tag/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -11159,11 +10527,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_recipe_method_tag_id
-      summary: PUT /wp/v2/dv-recipe-method-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-method-tag/(?P<id>[\d]+) (PUT), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-recipe-method-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-method-tag/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -11225,11 +10592,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_recipe_method_tag_id
-      summary: PATCH /wp/v2/dv-recipe-method-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-method-tag/(?P<id>[\d]+) (PATCH), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-recipe-method-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-method-tag/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -11291,11 +10657,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_recipe_method_tag_id
-      summary: DELETE /wp/v2/dv-recipe-method-tag/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe-method-tag/(?P<id>[\d]+) (DELETE), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-recipe-method-tag/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe-method-tag/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -11347,11 +10712,10 @@ paths:
   /wp/v2/dv-recipe/{id}:
     get:
       operationId: get_wp_v2_dv_recipe_id
-      summary: GET /wp/v2/dv-recipe/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe/(?P<id>[\d]+) (GET), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-recipe/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -11411,11 +10775,10 @@ paths:
         description: The password for the post if it is password protected.
     post:
       operationId: post_wp_v2_dv_recipe_id
-      summary: POST /wp/v2/dv-recipe/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe/(?P<id>[\d]+) (POST), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-recipe/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -11470,7 +10833,7 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: &id007
+                  enum:
                   - publish
                   - future
                   - draft
@@ -11505,13 +10868,13 @@ paths:
                   description: The ID of the featured media for the post.
                 comment_status:
                   type: string
-                  enum: &id008
+                  enum:
                   - open
                   - closed
                   description: Whether or not comments are open on the post.
                 ping_status:
                   type: string
-                  enum: &id009
+                  enum:
                   - open
                   - closed
                   description: Whether or not the post can be pinged.
@@ -11564,11 +10927,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_recipe_id
-      summary: PUT /wp/v2/dv-recipe/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe/(?P<id>[\d]+) (PUT), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-recipe/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -11623,7 +10985,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id007
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -11645,11 +11020,15 @@ paths:
                   description: The ID of the featured media for the post.
                 comment_status:
                   type: string
-                  enum: *id008
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not comments are open on the post.
                 ping_status:
                   type: string
-                  enum: *id009
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not the post can be pinged.
                 meta:
                   type: object
@@ -11700,11 +11079,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_recipe_id
-      summary: PATCH /wp/v2/dv-recipe/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe/(?P<id>[\d]+) (PATCH), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-recipe/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -11759,7 +11137,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id007
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -11781,11 +11172,15 @@ paths:
                   description: The ID of the featured media for the post.
                 comment_status:
                   type: string
-                  enum: *id008
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not comments are open on the post.
                 ping_status:
                   type: string
-                  enum: *id009
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not the post can be pinged.
                 meta:
                   type: object
@@ -11836,11 +11231,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_recipe_id
-      summary: DELETE /wp/v2/dv-recipe/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe/(?P<id>[\d]+) (DELETE), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-recipe/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -11892,11 +11286,10 @@ paths:
   /wp/v2/dv-recipe/{id}/autosaves:
     get:
       operationId: get_wp_v2_dv_recipe_id_autosaves
-      summary: GET /wp/v2/dv-recipe/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-recipe/(?P<id>[\d]+)/autosaves (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-recipe/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-recipe/(?P[\d]+)/autosaves (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -11949,11 +11342,10 @@ paths:
           type: string
     post:
       operationId: post_wp_v2_dv_recipe_id_autosaves
-      summary: POST /wp/v2/dv-recipe/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-recipe/(?P<id>[\d]+)/autosaves (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-recipe/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-recipe/(?P[\d]+)/autosaves (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -12105,11 +11497,10 @@ paths:
   /wp/v2/dv-recipe/{parent}/autosaves/{id}:
     get:
       operationId: get_wp_v2_dv_recipe_parent_autosaves_id
-      summary: GET /wp/v2/dv-recipe/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+) (GET), as declared by the
-        route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-recipe/(?P[\d]+)/autosaves/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe/(?P[\d]+)/autosaves/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -12164,11 +11555,10 @@ paths:
   /wp/v2/dv-recipe/{parent}/revisions:
     get:
       operationId: get_wp_v2_dv_recipe_parent_revisions
-      summary: GET /wp/v2/dv-recipe/(?P<parent>[\d]+)/revisions
-      description: WordPress REST route /wp/v2/dv-recipe/(?P<parent>[\d]+)/revisions (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-recipe/(?P[\d]+)/revisions
+      description: WordPress REST route /wp/v2/dv-recipe/(?P[\d]+)/revisions (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -12288,11 +11678,10 @@ paths:
   /wp/v2/dv-recipe/{parent}/revisions/{id}:
     get:
       operationId: get_wp_v2_dv_recipe_parent_revisions_id
-      summary: GET /wp/v2/dv-recipe/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+) (GET), as declared by the
-        route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-recipe/(?P[\d]+)/revisions/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe/(?P[\d]+)/revisions/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -12346,11 +11735,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     delete:
       operationId: delete_wp_v2_dv_recipe_parent_revisions_id
-      summary: DELETE /wp/v2/dv-recipe/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-recipe/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+) (DELETE), as declared by
-        the route discovery index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-recipe/(?P[\d]+)/revisions/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-recipe/(?P[\d]+)/revisions/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -12411,7 +11799,7 @@ paths:
       summary: GET /wp/v2/dv-topic
       description: WordPress REST route /wp/v2/dv-topic (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -12550,7 +11938,7 @@ paths:
       summary: POST /wp/v2/dv-topic
       description: WordPress REST route /wp/v2/dv-topic (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -12608,10 +11996,10 @@ paths:
   /wp/v2/dv-topic/{id}:
     get:
       operationId: get_wp_v2_dv_topic_id
-      summary: GET /wp/v2/dv-topic/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-topic/(?P<id>[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-topic/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-topic/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -12659,11 +12047,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     post:
       operationId: post_wp_v2_dv_topic_id
-      summary: POST /wp/v2/dv-topic/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-topic/(?P<id>[\d]+) (POST), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-topic/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-topic/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -12725,10 +12112,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_topic_id
-      summary: PUT /wp/v2/dv-topic/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-topic/(?P<id>[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-topic/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-topic/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -12790,11 +12177,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_topic_id
-      summary: PATCH /wp/v2/dv-topic/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-topic/(?P<id>[\d]+) (PATCH), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-topic/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-topic/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -12856,11 +12242,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_topic_id
-      summary: DELETE /wp/v2/dv-topic/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-topic/(?P<id>[\d]+) (DELETE), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-topic/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-topic/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -12915,7 +12300,7 @@ paths:
       summary: GET /wp/v2/dv-video
       description: WordPress REST route /wp/v2/dv-video (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -13166,7 +12551,7 @@ paths:
       summary: POST /wp/v2/dv-video
       description: WordPress REST route /wp/v2/dv-video (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -13272,7 +12657,7 @@ paths:
       summary: GET /wp/v2/dv-video-playlist
       description: WordPress REST route /wp/v2/dv-video-playlist (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -13411,7 +12796,7 @@ paths:
       summary: POST /wp/v2/dv-video-playlist
       description: WordPress REST route /wp/v2/dv-video-playlist (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -13466,11 +12851,10 @@ paths:
   /wp/v2/dv-video-playlist/{id}:
     get:
       operationId: get_wp_v2_dv_video_playlist_id
-      summary: GET /wp/v2/dv-video-playlist/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-video-playlist/(?P<id>[\d]+) (GET), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-video-playlist/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-video-playlist/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -13518,11 +12902,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     post:
       operationId: post_wp_v2_dv_video_playlist_id
-      summary: POST /wp/v2/dv-video-playlist/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-video-playlist/(?P<id>[\d]+) (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-video-playlist/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-video-playlist/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -13581,11 +12964,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_video_playlist_id
-      summary: PUT /wp/v2/dv-video-playlist/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-video-playlist/(?P<id>[\d]+) (PUT), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-video-playlist/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-video-playlist/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -13644,11 +13026,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_video_playlist_id
-      summary: PATCH /wp/v2/dv-video-playlist/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-video-playlist/(?P<id>[\d]+) (PATCH), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-video-playlist/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-video-playlist/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -13707,11 +13088,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_video_playlist_id
-      summary: DELETE /wp/v2/dv-video-playlist/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-video-playlist/(?P<id>[\d]+) (DELETE), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-video-playlist/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-video-playlist/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -13763,10 +13143,10 @@ paths:
   /wp/v2/dv-video/{id}:
     get:
       operationId: get_wp_v2_dv_video_id
-      summary: GET /wp/v2/dv-video/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-video/(?P<id>[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-video/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-video/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -13826,11 +13206,10 @@ paths:
         description: The password for the post if it is password protected.
     post:
       operationId: post_wp_v2_dv_video_id
-      summary: POST /wp/v2/dv-video/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-video/(?P<id>[\d]+) (POST), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-video/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-video/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -13885,7 +13264,7 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: &id010
+                  enum:
                   - publish
                   - future
                   - draft
@@ -13939,10 +13318,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_dv_video_id
-      summary: PUT /wp/v2/dv-video/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-video/(?P<id>[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/dv-video/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-video/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -13997,7 +13376,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id010
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -14038,11 +13430,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_dv_video_id
-      summary: PATCH /wp/v2/dv-video/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-video/(?P<id>[\d]+) (PATCH), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/dv-video/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-video/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -14097,7 +13488,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id010
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -14138,11 +13542,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_dv_video_id
-      summary: DELETE /wp/v2/dv-video/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-video/(?P<id>[\d]+) (DELETE), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/dv-video/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-video/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -14194,11 +13597,10 @@ paths:
   /wp/v2/dv-video/{id}/autosaves:
     get:
       operationId: get_wp_v2_dv_video_id_autosaves
-      summary: GET /wp/v2/dv-video/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-video/(?P<id>[\d]+)/autosaves (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-video/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-video/(?P[\d]+)/autosaves (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -14251,11 +13653,10 @@ paths:
           type: string
     post:
       operationId: post_wp_v2_dv_video_id_autosaves
-      summary: POST /wp/v2/dv-video/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/dv-video/(?P<id>[\d]+)/autosaves (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/dv-video/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/dv-video/(?P[\d]+)/autosaves (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -14367,11 +13768,10 @@ paths:
   /wp/v2/dv-video/{parent}/autosaves/{id}:
     get:
       operationId: get_wp_v2_dv_video_parent_autosaves_id
-      summary: GET /wp/v2/dv-video/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/dv-video/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+) (GET), as declared by the
-        route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/dv-video/(?P[\d]+)/autosaves/(?P[\d]+)
+      description: WordPress REST route /wp/v2/dv-video/(?P[\d]+)/autosaves/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -14429,7 +13829,7 @@ paths:
       summary: GET /wp/v2/media
       description: WordPress REST route /wp/v2/media (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -14706,7 +14106,7 @@ paths:
       summary: POST /wp/v2/media
       description: WordPress REST route /wp/v2/media (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -14822,10 +14222,10 @@ paths:
   /wp/v2/media/{id}:
     get:
       operationId: get_wp_v2_media_id
-      summary: GET /wp/v2/media/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/media/(?P<id>[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/media/(?P[\d]+)
+      description: WordPress REST route /wp/v2/media/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -14873,10 +14273,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     post:
       operationId: post_wp_v2_media_id
-      summary: POST /wp/v2/media/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/media/(?P<id>[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/media/(?P[\d]+)
+      description: WordPress REST route /wp/v2/media/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -14931,7 +14331,7 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: &id011
+                  enum:
                   - publish
                   - future
                   - draft
@@ -14957,13 +14357,13 @@ paths:
                   description: The ID of the featured media for the post.
                 comment_status:
                   type: string
-                  enum: &id012
+                  enum:
                   - open
                   - closed
                   description: Whether or not comments are open on the post.
                 ping_status:
                   type: string
-                  enum: &id013
+                  enum:
                   - open
                   - closed
                   description: Whether or not the post can be pinged.
@@ -14998,10 +14398,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_media_id
-      summary: PUT /wp/v2/media/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/media/(?P<id>[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/media/(?P[\d]+)
+      description: WordPress REST route /wp/v2/media/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -15056,7 +14456,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id011
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 title:
                   type: object
@@ -15069,11 +14482,15 @@ paths:
                   description: The ID of the featured media for the post.
                 comment_status:
                   type: string
-                  enum: *id012
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not comments are open on the post.
                 ping_status:
                   type: string
-                  enum: *id013
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not the post can be pinged.
                 meta:
                   type: object
@@ -15106,10 +14523,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_media_id
-      summary: PATCH /wp/v2/media/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/media/(?P<id>[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/media/(?P[\d]+)
+      description: WordPress REST route /wp/v2/media/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -15164,7 +14581,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id011
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 title:
                   type: object
@@ -15177,11 +14607,15 @@ paths:
                   description: The ID of the featured media for the post.
                 comment_status:
                   type: string
-                  enum: *id012
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not comments are open on the post.
                 ping_status:
                   type: string
-                  enum: *id013
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not the post can be pinged.
                 meta:
                   type: object
@@ -15214,10 +14648,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_media_id
-      summary: DELETE /wp/v2/media/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/media/(?P<id>[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/media/(?P[\d]+)
+      description: WordPress REST route /wp/v2/media/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -15269,11 +14703,10 @@ paths:
   /wp/v2/media/{id}/edit:
     post:
       operationId: post_wp_v2_media_id_edit
-      summary: POST /wp/v2/media/(?P<id>[\d]+)/edit
-      description: WordPress REST route /wp/v2/media/(?P<id>[\d]+)/edit (POST), as declared by the route discovery index at
-        https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/media/(?P[\d]+)/edit
+      description: WordPress REST route /wp/v2/media/(?P[\d]+)/edit (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -15332,26 +14765,22 @@ paths:
                   type: number
                   minimum: 0
                   maximum: 100
-                  description: 'As a percentage of the image, the x position to start the crop from. DEPRECATED: Use `modifiers`
-                    instead.'
+                  description: 'As a percentage of the image, the x position to start the crop from. DEPRECATED: Use `modifiers` instead.'
                 y:
                   type: number
                   minimum: 0
                   maximum: 100
-                  description: 'As a percentage of the image, the y position to start the crop from. DEPRECATED: Use `modifiers`
-                    instead.'
+                  description: 'As a percentage of the image, the y position to start the crop from. DEPRECATED: Use `modifiers` instead.'
                 width:
                   type: number
                   minimum: 0
                   maximum: 100
-                  description: 'As a percentage of the image, the width to crop the image to. DEPRECATED: Use `modifiers`
-                    instead.'
+                  description: 'As a percentage of the image, the width to crop the image to. DEPRECATED: Use `modifiers` instead.'
                 height:
                   type: number
                   minimum: 0
                   maximum: 100
-                  description: 'As a percentage of the image, the height to crop the image to. DEPRECATED: Use `modifiers`
-                    instead.'
+                  description: 'As a percentage of the image, the height to crop the image to. DEPRECATED: Use `modifiers` instead.'
                 caption:
                   type: object
                   description: The attachment caption.
@@ -15375,11 +14804,10 @@ paths:
   /wp/v2/media/{id}/post-process:
     post:
       operationId: post_wp_v2_media_id_post_process
-      summary: POST /wp/v2/media/(?P<id>[\d]+)/post-process
-      description: WordPress REST route /wp/v2/media/(?P<id>[\d]+)/post-process (POST), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/media/(?P[\d]+)/post-process
+      description: WordPress REST route /wp/v2/media/(?P[\d]+)/post-process (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -15436,7 +14864,7 @@ paths:
       summary: GET /wp/v2/pages
       description: WordPress REST route /wp/v2/pages (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -15718,7 +15146,7 @@ paths:
       summary: POST /wp/v2/pages
       description: WordPress REST route /wp/v2/pages (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -15837,10 +15265,10 @@ paths:
   /wp/v2/pages/{id}:
     get:
       operationId: get_wp_v2_pages_id
-      summary: GET /wp/v2/pages/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/pages/(?P<id>[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/pages/(?P[\d]+)
+      description: WordPress REST route /wp/v2/pages/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -15900,10 +15328,10 @@ paths:
         description: The password for the post if it is password protected.
     post:
       operationId: post_wp_v2_pages_id
-      summary: POST /wp/v2/pages/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/pages/(?P<id>[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/pages/(?P[\d]+)
+      description: WordPress REST route /wp/v2/pages/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -15958,7 +15386,7 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: &id014
+                  enum:
                   - publish
                   - future
                   - draft
@@ -15996,13 +15424,13 @@ paths:
                   description: The ID of the featured media for the post.
                 comment_status:
                   type: string
-                  enum: &id015
+                  enum:
                   - open
                   - closed
                   description: Whether or not comments are open on the post.
                 ping_status:
                   type: string
-                  enum: &id016
+                  enum:
                   - open
                   - closed
                   description: Whether or not the post can be pinged.
@@ -16028,10 +15456,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_pages_id
-      summary: PUT /wp/v2/pages/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/pages/(?P<id>[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/pages/(?P[\d]+)
+      description: WordPress REST route /wp/v2/pages/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -16086,7 +15514,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id014
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -16111,11 +15552,15 @@ paths:
                   description: The ID of the featured media for the post.
                 comment_status:
                   type: string
-                  enum: *id015
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not comments are open on the post.
                 ping_status:
                   type: string
-                  enum: *id016
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not the post can be pinged.
                 menu_order:
                   type: integer
@@ -16139,10 +15584,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_pages_id
-      summary: PATCH /wp/v2/pages/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/pages/(?P<id>[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/pages/(?P[\d]+)
+      description: WordPress REST route /wp/v2/pages/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -16197,7 +15642,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id014
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -16222,11 +15680,15 @@ paths:
                   description: The ID of the featured media for the post.
                 comment_status:
                   type: string
-                  enum: *id015
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not comments are open on the post.
                 ping_status:
                   type: string
-                  enum: *id016
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not the post can be pinged.
                 menu_order:
                   type: integer
@@ -16250,10 +15712,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_pages_id
-      summary: DELETE /wp/v2/pages/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/pages/(?P<id>[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/pages/(?P[\d]+)
+      description: WordPress REST route /wp/v2/pages/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -16305,11 +15767,10 @@ paths:
   /wp/v2/pages/{id}/autosaves:
     get:
       operationId: get_wp_v2_pages_id_autosaves
-      summary: GET /wp/v2/pages/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/pages/(?P<id>[\d]+)/autosaves (GET), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/pages/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/pages/(?P[\d]+)/autosaves (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -16362,11 +15823,10 @@ paths:
           type: string
     post:
       operationId: post_wp_v2_pages_id_autosaves
-      summary: POST /wp/v2/pages/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/pages/(?P<id>[\d]+)/autosaves (POST), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/pages/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/pages/(?P[\d]+)/autosaves (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -16491,11 +15951,10 @@ paths:
   /wp/v2/pages/{parent}/autosaves/{id}:
     get:
       operationId: get_wp_v2_pages_parent_autosaves_id
-      summary: GET /wp/v2/pages/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/pages/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+) (GET), as declared by the route
-        discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/pages/(?P[\d]+)/autosaves/(?P[\d]+)
+      description: WordPress REST route /wp/v2/pages/(?P[\d]+)/autosaves/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -16550,11 +16009,10 @@ paths:
   /wp/v2/pages/{parent}/revisions:
     get:
       operationId: get_wp_v2_pages_parent_revisions
-      summary: GET /wp/v2/pages/(?P<parent>[\d]+)/revisions
-      description: WordPress REST route /wp/v2/pages/(?P<parent>[\d]+)/revisions (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/pages/(?P[\d]+)/revisions
+      description: WordPress REST route /wp/v2/pages/(?P[\d]+)/revisions (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -16674,11 +16132,10 @@ paths:
   /wp/v2/pages/{parent}/revisions/{id}:
     get:
       operationId: get_wp_v2_pages_parent_revisions_id
-      summary: GET /wp/v2/pages/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/pages/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+) (GET), as declared by the route
-        discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/pages/(?P[\d]+)/revisions/(?P[\d]+)
+      description: WordPress REST route /wp/v2/pages/(?P[\d]+)/revisions/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -16732,11 +16189,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     delete:
       operationId: delete_wp_v2_pages_parent_revisions_id
-      summary: DELETE /wp/v2/pages/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/pages/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+) (DELETE), as declared by the
-        route discovery index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/pages/(?P[\d]+)/revisions/(?P[\d]+)
+      description: WordPress REST route /wp/v2/pages/(?P[\d]+)/revisions/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -16797,7 +16253,7 @@ paths:
       summary: GET /wp/v2/posts
       description: WordPress REST route /wp/v2/posts (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -17111,7 +16567,7 @@ paths:
       summary: POST /wp/v2/posts
       description: WordPress REST route /wp/v2/posts (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -17251,11 +16707,10 @@ paths:
   /wp/v2/posts/{id}/related:
     get:
       operationId: get_wp_v2_posts_id_related
-      summary: GET /wp/v2/posts/(?P<id>[0-9]+)/related
-      description: WordPress REST route /wp/v2/posts/(?P<id>[0-9]+)/related (GET), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/posts/(?P[0-9]+)/related
+      description: WordPress REST route /wp/v2/posts/(?P[0-9]+)/related (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -17299,10 +16754,10 @@ paths:
   /wp/v2/posts/{id}:
     get:
       operationId: get_wp_v2_posts_id
-      summary: GET /wp/v2/posts/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/posts/(?P<id>[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/posts/(?P[\d]+)
+      description: WordPress REST route /wp/v2/posts/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -17362,10 +16817,10 @@ paths:
         description: The password for the post if it is password protected.
     post:
       operationId: post_wp_v2_posts_id
-      summary: POST /wp/v2/posts/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/posts/(?P<id>[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/posts/(?P[\d]+)
+      description: WordPress REST route /wp/v2/posts/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -17420,7 +16875,7 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: &id017
+                  enum:
                   - publish
                   - future
                   - draft
@@ -17455,19 +16910,19 @@ paths:
                   description: The ID of the featured media for the post.
                 comment_status:
                   type: string
-                  enum: &id018
+                  enum:
                   - open
                   - closed
                   description: Whether or not comments are open on the post.
                 ping_status:
                   type: string
-                  enum: &id019
+                  enum:
                   - open
                   - closed
                   description: Whether or not the post can be pinged.
                 format:
                   type: string
-                  enum: &id020
+                  enum:
                   - standard
                   - aside
                   - chat
@@ -17511,10 +16966,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_posts_id
-      summary: PUT /wp/v2/posts/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/posts/(?P<id>[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/posts/(?P[\d]+)
+      description: WordPress REST route /wp/v2/posts/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -17569,7 +17024,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id017
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -17591,15 +17059,29 @@ paths:
                   description: The ID of the featured media for the post.
                 comment_status:
                   type: string
-                  enum: *id018
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not comments are open on the post.
                 ping_status:
                   type: string
-                  enum: *id019
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not the post can be pinged.
                 format:
                   type: string
-                  enum: *id020
+                  enum:
+                  - standard
+                  - aside
+                  - chat
+                  - gallery
+                  - link
+                  - image
+                  - quote
+                  - status
+                  - video
+                  - audio
                   description: The format for the post.
                 meta:
                   type: object
@@ -17633,10 +17115,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_posts_id
-      summary: PATCH /wp/v2/posts/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/posts/(?P<id>[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/posts/(?P[\d]+)
+      description: WordPress REST route /wp/v2/posts/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -17691,7 +17173,20 @@ paths:
                   description: An alphanumeric identifier for the post unique to its type.
                 status:
                   type: string
-                  enum: *id017
+                  enum:
+                  - publish
+                  - future
+                  - draft
+                  - pending
+                  - private
+                  - nab_hidden
+                  - nab_ready
+                  - nab_scheduled
+                  - nab_running
+                  - nab_paused
+                  - nab_paused_draft
+                  - nab_finished
+                  - spam
                   description: A named status for the post.
                 password:
                   type: string
@@ -17713,15 +17208,29 @@ paths:
                   description: The ID of the featured media for the post.
                 comment_status:
                   type: string
-                  enum: *id018
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not comments are open on the post.
                 ping_status:
                   type: string
-                  enum: *id019
+                  enum:
+                  - open
+                  - closed
                   description: Whether or not the post can be pinged.
                 format:
                   type: string
-                  enum: *id020
+                  enum:
+                  - standard
+                  - aside
+                  - chat
+                  - gallery
+                  - link
+                  - image
+                  - quote
+                  - status
+                  - video
+                  - audio
                   description: The format for the post.
                 meta:
                   type: object
@@ -17755,10 +17264,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_posts_id
-      summary: DELETE /wp/v2/posts/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/posts/(?P<id>[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/posts/(?P[\d]+)
+      description: WordPress REST route /wp/v2/posts/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -17810,11 +17319,10 @@ paths:
   /wp/v2/posts/{id}/autosaves:
     get:
       operationId: get_wp_v2_posts_id_autosaves
-      summary: GET /wp/v2/posts/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/posts/(?P<id>[\d]+)/autosaves (GET), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/posts/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/posts/(?P[\d]+)/autosaves (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -17867,11 +17375,10 @@ paths:
           type: string
     post:
       operationId: post_wp_v2_posts_id_autosaves
-      summary: POST /wp/v2/posts/(?P<id>[\d]+)/autosaves
-      description: WordPress REST route /wp/v2/posts/(?P<id>[\d]+)/autosaves (POST), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/posts/(?P[\d]+)/autosaves
+      description: WordPress REST route /wp/v2/posts/(?P[\d]+)/autosaves (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -18020,11 +17527,10 @@ paths:
   /wp/v2/posts/{parent}/autosaves/{id}:
     get:
       operationId: get_wp_v2_posts_parent_autosaves_id
-      summary: GET /wp/v2/posts/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/posts/(?P<parent>[\d]+)/autosaves/(?P<id>[\d]+) (GET), as declared by the route
-        discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/posts/(?P[\d]+)/autosaves/(?P[\d]+)
+      description: WordPress REST route /wp/v2/posts/(?P[\d]+)/autosaves/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -18079,11 +17585,10 @@ paths:
   /wp/v2/posts/{parent}/revisions:
     get:
       operationId: get_wp_v2_posts_parent_revisions
-      summary: GET /wp/v2/posts/(?P<parent>[\d]+)/revisions
-      description: WordPress REST route /wp/v2/posts/(?P<parent>[\d]+)/revisions (GET), as declared by the route discovery
-        index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/posts/(?P[\d]+)/revisions
+      description: WordPress REST route /wp/v2/posts/(?P[\d]+)/revisions (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -18203,11 +17708,10 @@ paths:
   /wp/v2/posts/{parent}/revisions/{id}:
     get:
       operationId: get_wp_v2_posts_parent_revisions_id
-      summary: GET /wp/v2/posts/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/posts/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+) (GET), as declared by the route
-        discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/posts/(?P[\d]+)/revisions/(?P[\d]+)
+      description: WordPress REST route /wp/v2/posts/(?P[\d]+)/revisions/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -18261,11 +17765,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     delete:
       operationId: delete_wp_v2_posts_parent_revisions_id
-      summary: DELETE /wp/v2/posts/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/posts/(?P<parent>[\d]+)/revisions/(?P<id>[\d]+) (DELETE), as declared by the
-        route discovery index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/posts/(?P[\d]+)/revisions/(?P[\d]+)
+      description: WordPress REST route /wp/v2/posts/(?P[\d]+)/revisions/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -18326,7 +17829,7 @@ paths:
       summary: GET /wp/v2/search
       description: WordPress REST route /wp/v2/search (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -18452,7 +17955,7 @@ paths:
       summary: GET /wp/v2/statuses
       description: WordPress REST route /wp/v2/statuses (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -18495,11 +17998,10 @@ paths:
   /wp/v2/statuses/{status}:
     get:
       operationId: get_wp_v2_statuses_status
-      summary: GET /wp/v2/statuses/(?P<status>[\w-]+)
-      description: WordPress REST route /wp/v2/statuses/(?P<status>[\w-]+) (GET), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/statuses/(?P[\w-]+)
+      description: WordPress REST route /wp/v2/statuses/(?P[\w-]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -18551,7 +18053,7 @@ paths:
       summary: GET /wp/v2/tags
       description: WordPress REST route /wp/v2/tags (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -18690,7 +18192,7 @@ paths:
       summary: POST /wp/v2/tags
       description: WordPress REST route /wp/v2/tags (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -18745,10 +18247,10 @@ paths:
   /wp/v2/tags/{id}:
     get:
       operationId: get_wp_v2_tags_id
-      summary: GET /wp/v2/tags/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/tags/(?P<id>[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/tags/(?P[\d]+)
+      description: WordPress REST route /wp/v2/tags/(?P[\d]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -18796,10 +18298,10 @@ paths:
         description: Scope under which the request is made; determines fields present in response.
     post:
       operationId: post_wp_v2_tags_id
-      summary: POST /wp/v2/tags/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/tags/(?P<id>[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/tags/(?P[\d]+)
+      description: WordPress REST route /wp/v2/tags/(?P[\d]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -18858,10 +18360,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_tags_id
-      summary: PUT /wp/v2/tags/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/tags/(?P<id>[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/tags/(?P[\d]+)
+      description: WordPress REST route /wp/v2/tags/(?P[\d]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -18920,10 +18422,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_tags_id
-      summary: PATCH /wp/v2/tags/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/tags/(?P<id>[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/tags/(?P[\d]+)
+      description: WordPress REST route /wp/v2/tags/(?P[\d]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -18982,10 +18484,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_tags_id
-      summary: DELETE /wp/v2/tags/(?P<id>[\d]+)
-      description: WordPress REST route /wp/v2/tags/(?P<id>[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/tags/(?P[\d]+)
+      description: WordPress REST route /wp/v2/tags/(?P[\d]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -19040,7 +18542,7 @@ paths:
       summary: GET /wp/v2/taxonomies
       description: WordPress REST route /wp/v2/taxonomies (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -19089,11 +18591,10 @@ paths:
   /wp/v2/taxonomies/{taxonomy}:
     get:
       operationId: get_wp_v2_taxonomies_taxonomy
-      summary: GET /wp/v2/taxonomies/(?P<taxonomy>[\w-]+)
-      description: WordPress REST route /wp/v2/taxonomies/(?P<taxonomy>[\w-]+) (GET), as declared by the route discovery index
-        at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/taxonomies/(?P[\w-]+)
+      description: WordPress REST route /wp/v2/taxonomies/(?P[\w-]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -19145,7 +18646,7 @@ paths:
       summary: GET /wp/v2/types
       description: WordPress REST route /wp/v2/types (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -19188,10 +18689,10 @@ paths:
   /wp/v2/types/{type}:
     get:
       operationId: get_wp_v2_types_type
-      summary: GET /wp/v2/types/(?P<type>[\w-]+)
-      description: WordPress REST route /wp/v2/types/(?P<type>[\w-]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/types/(?P[\w-]+)
+      description: WordPress REST route /wp/v2/types/(?P[\w-]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -19240,11 +18741,10 @@ paths:
   /wp/v2/users/{user_id}/application-passwords:
     get:
       operationId: get_wp_v2_users_user_id_application_passwords
-      summary: GET /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords
-      description: WordPress REST route /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords (GET), as declared by
-        the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/users/(?P(?:[\d]+|me))/application-passwords
+      description: WordPress REST route /wp/v2/users/(?P(?:[\d]+|me))/application-passwords (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -19291,11 +18791,10 @@ paths:
           type: string
     post:
       operationId: post_wp_v2_users_user_id_application_passwords
-      summary: POST /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords
-      description: WordPress REST route /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords (POST), as declared by
-        the route discovery index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/users/(?P(?:[\d]+|me))/application-passwords
+      description: WordPress REST route /wp/v2/users/(?P(?:[\d]+|me))/application-passwords (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -19338,8 +18837,7 @@ paths:
               properties:
                 app_id:
                   type: string
-                  description: A UUID provided by the application to uniquely identify it. It is recommended to use an UUID
-                    v5 with the URL or DNS namespace.
+                  description: A UUID provided by the application to uniquely identify it. It is recommended to use an UUID v5 with the URL or DNS namespace.
                 name:
                   type: string
                   description: The name of the application password.
@@ -19350,11 +18848,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_users_user_id_application_passwords
-      summary: DELETE /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords
-      description: WordPress REST route /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords (DELETE), as declared
-        by the route discovery index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/users/(?P(?:[\d]+|me))/application-passwords
+      description: WordPress REST route /wp/v2/users/(?P(?:[\d]+|me))/application-passwords (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -19394,11 +18891,10 @@ paths:
   /wp/v2/users/{user_id}/application-passwords/{uuid}:
     get:
       operationId: get_wp_v2_users_user_id_application_passwords_uuid
-      summary: GET /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords/(?P<uuid>[\w\-]+)
-      description: WordPress REST route /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords/(?P<uuid>[\w\-]+) (GET),
-        as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/users/(?P(?:[\d]+|me))/application-passwords/(?P[\w\-]+)
+      description: WordPress REST route /wp/v2/users/(?P(?:[\d]+|me))/application-passwords/(?P[\w\-]+) (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -19450,11 +18946,10 @@ paths:
           type: string
     post:
       operationId: post_wp_v2_users_user_id_application_passwords_uuid
-      summary: POST /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords/(?P<uuid>[\w\-]+)
-      description: WordPress REST route /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords/(?P<uuid>[\w\-]+) (POST),
-        as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: POST /wp/v2/users/(?P(?:[\d]+|me))/application-passwords/(?P[\w\-]+)
+      description: WordPress REST route /wp/v2/users/(?P(?:[\d]+|me))/application-passwords/(?P[\w\-]+) (POST), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -19502,8 +18997,7 @@ paths:
               properties:
                 app_id:
                   type: string
-                  description: A UUID provided by the application to uniquely identify it. It is recommended to use an UUID
-                    v5 with the URL or DNS namespace.
+                  description: A UUID provided by the application to uniquely identify it. It is recommended to use an UUID v5 with the URL or DNS namespace.
                 name:
                   type: string
                   description: The name of the application password.
@@ -19512,11 +19006,10 @@ paths:
       - cookieNonce: []
     put:
       operationId: put_wp_v2_users_user_id_application_passwords_uuid
-      summary: PUT /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords/(?P<uuid>[\w\-]+)
-      description: WordPress REST route /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords/(?P<uuid>[\w\-]+) (PUT),
-        as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: PUT /wp/v2/users/(?P(?:[\d]+|me))/application-passwords/(?P[\w\-]+)
+      description: WordPress REST route /wp/v2/users/(?P(?:[\d]+|me))/application-passwords/(?P[\w\-]+) (PUT), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -19564,8 +19057,7 @@ paths:
               properties:
                 app_id:
                   type: string
-                  description: A UUID provided by the application to uniquely identify it. It is recommended to use an UUID
-                    v5 with the URL or DNS namespace.
+                  description: A UUID provided by the application to uniquely identify it. It is recommended to use an UUID v5 with the URL or DNS namespace.
                 name:
                   type: string
                   description: The name of the application password.
@@ -19574,11 +19066,10 @@ paths:
       - cookieNonce: []
     patch:
       operationId: patch_wp_v2_users_user_id_application_passwords_uuid
-      summary: PATCH /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords/(?P<uuid>[\w\-]+)
-      description: WordPress REST route /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords/(?P<uuid>[\w\-]+) (PATCH),
-        as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: PATCH /wp/v2/users/(?P(?:[\d]+|me))/application-passwords/(?P[\w\-]+)
+      description: WordPress REST route /wp/v2/users/(?P(?:[\d]+|me))/application-passwords/(?P[\w\-]+) (PATCH), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -19626,8 +19117,7 @@ paths:
               properties:
                 app_id:
                   type: string
-                  description: A UUID provided by the application to uniquely identify it. It is recommended to use an UUID
-                    v5 with the URL or DNS namespace.
+                  description: A UUID provided by the application to uniquely identify it. It is recommended to use an UUID v5 with the URL or DNS namespace.
                 name:
                   type: string
                   description: The name of the application password.
@@ -19636,11 +19126,10 @@ paths:
       - cookieNonce: []
     delete:
       operationId: delete_wp_v2_users_user_id_application_passwords_uuid
-      summary: DELETE /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords/(?P<uuid>[\w\-]+)
-      description: WordPress REST route /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords/(?P<uuid>[\w\-]+) (DELETE),
-        as declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: DELETE /wp/v2/users/(?P(?:[\d]+|me))/application-passwords/(?P[\w\-]+)
+      description: WordPress REST route /wp/v2/users/(?P(?:[\d]+|me))/application-passwords/(?P[\w\-]+) (DELETE), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -19685,11 +19174,10 @@ paths:
   /wp/v2/users/{user_id}/application-passwords/introspect:
     get:
       operationId: get_wp_v2_users_user_id_application_passwords_introspect
-      summary: GET /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords/introspect
-      description: WordPress REST route /wp/v2/users/(?P<user_id>(?:[\d]+|me))/application-passwords/introspect (GET), as
-        declared by the route discovery index at https://www.davita.com/wp-json/.
+      summary: GET /wp/v2/users/(?P(?:[\d]+|me))/application-passwords/introspect
+      description: WordPress REST route /wp/v2/users/(?P(?:[\d]+|me))/application-passwords/introspect (GET), as declared by the route discovery index at https://www.davita.com/wp-json/.
       tags:
-      - wp-v2
+      - wp/v2
       responses:
         '200':
           description: Success
@@ -19734,6 +19222,43 @@ paths:
         required: true
         schema:
           type: string
-x-generated-from: https://www.davita.com/wp-json/ — WordPress REST route discovery index, mechanical transformation (route
-  regex -> templated path, endpoint args -> parameters/requestBody). No operation, parameter, or response was invented.
+components:
+  schemas:
+    WPRestError:
+      type: object
+      description: WordPress REST error envelope observed live on this host (not RFC 9457).
+      properties:
+        code:
+          type: string
+          examples:
+          - rest_no_route
+          - rest_invalid_param
+          - rest_forbidden
+          - dv_token_invalid
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            status:
+              type: integer
+            params:
+              type: object
+            details:
+              type: object
+      required:
+      - code
+      - message
+      - data
+  securitySchemes:
+    applicationPassword:
+      type: http
+      scheme: basic
+      description: 'WordPress Application Passwords. Authorization endpoint declared by the index: https://davita.com/wp-admin/authorize-application.php. Not offered to the public; write routes are staff-only.'
+    cookieNonce:
+      type: apiKey
+      in: header
+      name: X-WP-Nonce
+      description: WordPress cookie authentication nonce, accepted per the Access-Control-Allow-Headers response header. Browser/session only.
+x-generated-from: https://www.davita.com/wp-json/ — WordPress REST route discovery index, mechanical transformation (route regex -> templated path, endpoint args -> parameters/requestBody). No operation, parameter, or response was invented.
 x-generated-on: '2026-09-05'
