@@ -5,14 +5,29 @@ artifacts:
   authentication/davita-authentication.yml:
     method: derived
     evidence: declared in the artifact
+  certification/observations-2026-11-11.jsonl:
+    method: unknown
+    evidence: no authorship recorded
+  certification/status.yml:
+    method: unknown
+    evidence: no authorship recorded
+  compliance/davita-compliance.yml:
+    method: harvested
+    evidence: declared in the artifact
   conformance/davita-conformance.yml:
     method: unknown
     evidence: no authorship recorded
   conventions/davita-conventions.yml:
     method: derived
     evidence: declared in the artifact
+  data-license/davita-data-license.yml:
+    method: harvested
+    evidence: declared in the artifact
   data-model/davita-data-model.yml:
     method: derived
+    evidence: declared in the artifact
+  eligibility/davita-eligibility.yml:
+    method: harvested
     evidence: declared in the artifact
   errors/davita-problem-types.yml:
     method: unknown
@@ -26,10 +41,13 @@ artifacts:
   heartbeat/2026-11-06.yml:
     method: unknown
     evidence: no authorship recorded
+  heartbeat/2026-11-13.yml:
+    method: unknown
+    evidence: no authorship recorded
   kin/checks-2026-10-23T222754.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
-  kin/checks-2026-11-02T082323.yml:
+  kin/checks-2026-11-06T143934.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
   kin/score-2026-09-23T000603.yml:
@@ -95,6 +113,9 @@ artifacts:
   kin/score-2026-11-02T082323.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-11-06T143934.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
   lifecycle/davita-lifecycle.yml:
     method: unknown
     evidence: no authorship recorded
@@ -112,11 +133,17 @@ artifacts:
     method: harvested
     evidence: found in openapi/_original/; the fetch URL and bytes were not recorded, so byte-identity
       to the provider's source is unverified
+  overlays/davita-wp-rest-certification-overlay.yaml:
+    method: derived
+    evidence: declared in the artifact
   packages/davita-packages.yml:
     method: searched
     evidence: declared in the artifact
   plans/davita-plans-pricing.yml:
     method: searched
+    evidence: declared in the artifact
+  privacy/davita-privacy-policy.yml:
+    method: harvested
     evidence: declared in the artifact
   rate-limits/davita-rate-limits.yml:
     method: unknown
@@ -135,6 +162,9 @@ artifacts:
     evidence: declared in the artifact
   skills/davita-kidney-education-content.md:
     method: generated
+    evidence: declared in the artifact
+  terms/davita-terms-of-service.yml:
+    method: harvested
     evidence: declared in the artifact
   well-known/davita-well-known.yml:
     method: unknown
